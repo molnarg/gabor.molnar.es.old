@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Google Summer of Code | M.G.]]></title>
+  <link href="http://gabor.molnar.es/blog/categories/google-summer-of-code/atom.xml" rel="self"/>
+  <link href="http://gabor.molnar.es/"/>
+  <updated>2013-12-14T15:58:10+01:00</updated>
+  <id>http://gabor.molnar.es/</id>
+  <author>
+    <name><![CDATA[Gábor Molnár]]></name>
+    <email><![CDATA[gabor@molnar.es]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[GSoC - wrap up]]></title>
+    <link href="http://gabor.molnar.es/blog/2013/09/25/gsoc-wrap-up/"/>
+    <updated>2013-09-25T20:39:00+02:00</updated>
+    <id>http://gabor.molnar.es/blog/2013/09/25/gsoc-wrap-up</id>
+    <content type="html"><![CDATA[<p>This year’s Google Summer of Code program has sadly come to an end. It has been a great summer for me: I’ve met fantastic people, worked on software that will hopefully be widely used in the future, and contributed to the evolving HTTP/2 standard. </p>
+
+<!-- more -->
+
+<p>My Summer of Code project in numbers:</p>
+
+<ul>
+  <li>2 node.js modules:
+    <ul>
+      <li><a href="https://github.com/molnarg/node-http2">node-http2</a> : an HTTP/2 client and server implementation for node.js</li>
+      <li><a href="https://github.com/molnarg/http2-testpage">http2-testpage</a> : a test server for testing client side HTTP/2 implementations</li>
+    </ul>
+  </li>
+  <li>3147 lines of code (the main HTTP/2 implementation code)</li>
+  <li>2647 lines of test (in 94 node-http2 unit tests, and 32 http2-testpage testcases, providing ~90% <a href="https://github.com/molnarg/node-http2#test-coverage">code coverage</a>)</li>
+  <li>1426 lines of code comment (base of the generated <a href="http://molnarg.github.io/node-http2/doc/">developer documentation</a> and <a href="https://github.com/molnarg/node-http2/wiki/Public-API">API reference</a>)</li>
+  <li>502 <a href="https://github.com/molnarg/node-http2/commits/master">commits</a></li>
+  <li>16 <a href="/blog/categories/google-summer-of-code/">blog posts</a></li>
+  <li>15 <a href="https://github.com/molnarg/node-http2/releases">releases</a></li>
+  <li>launched the second public HTTP/2 server ever (after Microsoft’s <a href="https://github.com/MSOpenTech/http2-katana">http2-katana</a> test server)</li>
+  <li>with the help of one great mentor :)</li>
+</ul>
+
+<p>My http2 node.js module is ready to use, and I don’t plan to break the API in the foreseeable future, so I tagged last week’s release as 1.0.0. As most 1.0.0 software releases, this is the end of a long process, but certainly not the end of the work. There are still lot of things to do:</p>
+
+<ul>
+  <li>continuously upgrading to the latest draft of the standard (current draft: <a href="http://tools.ietf.org/html/draft-ietf-httpbis-http2-06">draft-ietf-httpbis-http2-06</a>)</li>
+  <li>fixing the issues that come up when more and more people start using this module</li>
+  <li>implementing the few <a href="https://github.com/molnarg/node-http2/issues?labels=feature">missing features</a> (the most important one is the <a href="https://github.com/molnarg/node-http2/issues/5">TLS ALPN support</a>)</li>
+  <li><a href="https://github.com/molnarg/node-http2/issues?labels=performance">performance optimization</a></li>
+</ul>
+
+<p>I will keep maintaining this module in my free time, so expect regular updates in the future too :)</p>
+
+<p>I would like to say thank you to all the amazing people who made all of this possible, especially Nick Hurley of Mozilla, my mentor, who spent countless hours with reviewing my code, listening to my problems and giving advice.</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[GSoC week #13]]></title>
+    <link href="http://gabor.molnar.es/blog/2013/09/15/gsoc-week-number-13/"/>
+    <updated>2013-09-15T22:00:00+02:00</updated>
+    <id>http://gabor.molnar.es/blog/2013/09/15/gsoc-week-number-13</id>
+    <content type="html"><![CDATA[<p>This is the summary of the 13. week of my Google Summer of Code project: <a href="https://google-melange.appspot.com/gsoc/project/google/gsoc2013/molnarg/5001">HTTP/2 prototype server implementation in node.js</a>.</p>
+
+<!-- more -->
+
+<p>This week was about making node-http2 fast, and starting work on a new project: <a href="https://github.com/molnarg/http2-testpage">http2-testpage</a>.</p>
+
+<p>It all began with a <a href="https://github.com/molnarg/node-http2/issues/47">GitHub issue</a> opened by <a href="https://twitter.com/tatsuhiro_t">Tatsuhiro Tsujikawa</a> (creator of <a href="https://github.com/tatsuhiro-t/spdylay">spdylay</a> and <a href="https://github.com/tatsuhiro-t/nghttp2">nghttp2</a>). It took lot of time to fix it, but then I was so deep into this performance optimization thing that I continued with other improvements. The optimizations were all based on CPU profiling data collected using <a href="https://github.com/c4milo/node-webkit-agent">node-webkit-agent</a>.</p>
+
+<p>The result is that it now takes 2 seconds to serve 600 small parallel request from the same client, while it took so long before that I could not even wait for it to complete. It’s great improvement, but I still plan to further optimize this, since there’s still room for improvements. I also plan to post about the lessons learned during the process sometime next week.</p>
+
+<p>Other than that, I started <a href="https://github.com/molnarg/http2-testpage">http2-testpage</a>. It’s a tool that injects intentional failures into HTTP/2 connections to test clients’ reaction. The next week will be dedicated to working on this.</p>
+
+<p>As usual, the latest code is published on npm (<code>npm install http2</code> and <code>npm install http2-testpage</code>). The <a href="http://molnarg.github.io/node-http2/doc/">hosted version of the docs</a> and the <a href="https://gabor.molnar.es:8080">prototype public server</a> was updated as well.</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[GSoC week #12]]></title>
+    <link href="http://gabor.molnar.es/blog/2013/09/09/gsoc-week-number-12/"/>
+    <updated>2013-09-09T22:58:00+02:00</updated>
+    <id>http://gabor.molnar.es/blog/2013/09/09/gsoc-week-number-12</id>
+    <content type="html"><![CDATA[<p>This is the summary of the 12. week of my Google Summer of Code project: <a href="https://google-melange.appspot.com/gsoc/project/google/gsoc2013/molnarg/5001">HTTP/2 prototype server implementation in node.js</a>.</p>
+
+<!-- more -->
+
+<p>The main item that I got done this week was the upgrade to the latest draft of the spec: <a href="http://tools.ietf.org/html/draft-ietf-httpbis-http2-06">draft-ietf-httpbis-http2-06</a>. This was a really smooth transition.</p>
+
+<p>I had to rewrite a large part of the <a href="http://molnarg.github.io/node-http2/doc/compressor.html">compression code</a>, but that was expected. I have to say that I like the <a href="http://tools.ietf.org/html/draft-ietf-httpbis-header-compression-03">current version of the compression spec</a> much better than previous versions. The text is much cleaner and it finally allows the building of a streaming header encoder and decoder implementation. The new implementation is therefore consists of a pair of transform streams that do the compression/decompression. The decompressor is in fact just buffering the input and then processing it in one large batch at the end, but fixing that is already on my todo list (<a href="https://github.com/molnarg/node-http2/issues/46">issue #46</a>). The next step would be exposing these streaming interfaces on the public API.</p>
+
+<p>For the next week, I’d like to finally start implementing a HTTP/2 test page for browsers (using the to-be-done <a href="https://github.com/molnarg/node-http2/issues/33">failure injection capability</a>). It has been on the table for a long time now, but I think that the time has come to finally start working on this.</p>
+
+<p>As usual, the latest code is published on npm, and the <a href="http://molnarg.github.io/node-http2/doc/">hosted version of the docs</a>. The <a href="https://gabor.molnar.es:8080">prototype public server</a> is down at the moment, but will be up, and updated soon!</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[GSoC week #11]]></title>
+    <link href="http://gabor.molnar.es/blog/2013/09/03/gsoc-week-number-11/"/>
+    <updated>2013-09-03T22:46:00+02:00</updated>
+    <id>http://gabor.molnar.es/blog/2013/09/03/gsoc-week-number-11</id>
+    <content type="html"><![CDATA[<p>This is the summary of the 11. week of my Google Summer of Code project: <a href="https://google-melange.appspot.com/gsoc/project/google/gsoc2013/molnarg/5001">HTTP/2 prototype server implementation in node.js</a>.</p>
+
+<!-- more -->
+
+<p>The focus of this week was testing: I wrote lots of unit tests to achieve 80% for every test coverage metric on every submodule.</p>
+
+<p><img src="http://gabor.molnar.es/images/test-coverage.png" /></p>
+
+<p>This led to lot of bugfixes. For example, I was able to fix the issue with push requests I saw last week when testing with Firefox. Additionally, I discovered that node’s NPN implementation does not always work well, and opened a <a href="https://github.com/joyent/node/issues/6168">ticket</a> for this issue.</p>
+
+<p>Main work items for the next week are:</p>
+
+<ul>
+  <li><a href="https://github.com/molnarg/node-http2/issues/39">update to the -06 version of the draft</a></li>
+  <li>start working on a HTTP/2 test page for browsers (using the to-be-done <a href="https://github.com/molnarg/node-http2/issues/33">failure injection capability</a>)</li>
+</ul>
+
+<p>As usual, the latest code is published on npm (just type <code>npm install http2</code> to install it), and the <a href="http://molnarg.github.io/node-http2/doc/">hosted version of the docs</a> and the <a href="https://gabor.molnar.es:8080">prototype public server</a> was updated as well.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[GSoC week #10]]></title>
+    <link href="http://gabor.molnar.es/blog/2013/08/27/gsoc-week-number-10/"/>
+    <updated>2013-08-27T22:35:00+02:00</updated>
+    <id>http://gabor.molnar.es/blog/2013/08/27/gsoc-week-number-10</id>
+    <content type="html"><![CDATA[<p>This is the summary of the 10. week of my Google Summer of Code project: <a href="https://google-melange.appspot.com/gsoc/project/google/gsoc2013/molnarg/5001">HTTP/2 prototype server implementation in node.js</a>.</p>
+
+<!-- more -->
+
+<p>The biggest work item I got done this week is <a href="https://github.com/molnarg/node-http2/issues/19">the</a> <a href="https://github.com/molnarg/node-http2/issues/20">prioritization</a>.</p>
+
+<p>Besides that, I worked on <a href="https://github.com/molnarg/node-http2/issues/32">API compatibility</a>. That means that the <a href="https://github.com/molnarg/node-http2/wiki/Public-API">node-http2 API</a> now looks very similar to the standard node.js HTTP API.</p>
+
+<p>Goals for the next week is <a href="https://github.com/molnarg/node-http2/issues/43">improving test coverage</a>, and starting work on a HTTP/2 test service with <a href="https://github.com/molnarg/node-http2/issues/33">failure injection</a> capability. Failure injection makes it possible to test how HTTP/2 implementations react to malfunctioning peers. Testing browsers with a failure injection tool is one of the main goals of this project, so it’s quite important to get right. Possible error scenarios are collected <a href="https://github.com/molnarg/node-http2/wiki/Error-Scenarios">in the wiki</a>.</p>
+
+<p>As usual, the latest code is published on npm (just type <code>npm install http2</code> to install it), and the <a href="http://molnarg.github.io/node-http2/doc/">hosted version of the docs</a> and the <a href="https://gabor.molnar.es:8080">prototype public server</a> was updated as well.</p>
+
+]]></content>
+  </entry>
+  
+</feed>

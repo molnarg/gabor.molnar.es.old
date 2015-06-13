@@ -1,0 +1,500 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>JavaScript programozás - A jQuery függvénykönyvtár - M.G.</title>
+  <meta name="author" content="Gábor Molnár">
+
+  
+  <meta name="description" content="A böngésző az oldal betöltésekor beolvassa a HTML fájlt, feldolgozza a stíluslapokat és lefuttatja a hivatkozott szkripteket. Ez azonban csak a &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://gabor.molnar.es/blog/2013/05/12/javascript-programozas-jegyzet-a-jquery-fuggvenykonyvtar">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="M.G." type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+<link href='//fonts.googleapis.com/css?family=Open+Sans&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+<!--<link href='//fonts.googleapis.com/css?family=Fjalla+One&subset=latin-ext,latin' rel='stylesheet' type='text/css'>-->
+<link href='//fonts.googleapis.com/css?family=Oswald:700,400&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-1277369-13']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">M.G.</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:gabor.molnar.es" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">JavaScript programozás - A jQuery függvénykönyvtár</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-12T20:16:00+02:00" pubdate data-updated="true">May 12<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>A böngésző az oldal betöltésekor beolvassa a HTML fájlt, feldolgozza a stíluslapokat és lefuttatja a hivatkozott szkripteket. Ez azonban csak a kezdet :)</p>
+
+<p>A JavaScript segítségével könnyen interaktívvá tehető egy weboldal. Ehhez két nagyon fontos eszközünk is van:</p>
+
+<ul>
+  <li>lehetséges a felhasználó tevékenységeire reagálni (egérkattintás, szöveg beírása, stb)</li>
+  <li>meg lehet változtatni a weboldal tartalmát a betöltődés után</li>
+</ul>
+
+<p>Ez a két dolog már elég ahhoz, hogy egyszerű webalkalmazásokat készítsünk.</p>
+
+<p>A beépített függvények viszont, amikkel ezeket a funkciókal elérhetjük, nem mindig egyszerűen használhatók, és van, hogy böngészőnként eltérően működnek. Szerencsére több olyan függvénykönyvtár is van, ami leegyszerűsíti a dolgunkat. Az egyik ilyen, nagyon népszerű függvénykönyvtár a <a href="http://jquery.com/">jQuery</a>, ennek a használatát fogom röviden bemutatni.</p>
+
+<!-- more -->
+
+<h2 id="document-object-model">Document Object Model</h2>
+
+<p><strong>A böngésző</strong> a HTML fájl beolvasásakor sorról sorra halad, és <strong>a beolvasott HTML tag-ekből objektumokat hoz létre</strong>. Ezeket az objektumokat <strong>element</strong>-eknek, <strong>elem</strong>eknek vagy <strong>node</strong>-oknak nevezzük, és JavaScript-ből is elérhetőek. Az element objektumoknak olyan metódusai, és tulajdonságai vannak, amiket felhasználva lehetséges az adott element adatait (pl. hol helyezkedik el a képernyőn, stílus adatok, stb.) kiolvasni és módosítani.</p>
+
+<p>Mivel a HTML-ben az egyes tag-eknek lehetnek “gyerekei”, ezért a létrejövő objektumhalmaz is hierarchikusan épül fel. A hierarchia legfelső szintjén a <code>document</code> objektum van, ennek a gyereke a <code>&lt;html&gt;</code> tag-nek megfelelő element, ennek pedig a <code>&lt;head&gt;</code> és <code>&lt;body&gt;</code> tag-eknek megfelelő objektumok, stb.</p>
+
+<p><strong>Ezt a hierarchikus szerkezetet nevezzük Document Object Model (DOM) fának.</strong></p>
+
+<p>Két jellemző tulajdonság, amivel minden element rendelkezik:</p>
+
+<ul>
+  <li><code>nodeName</code>: az adott element típusát tároló sztring (legtöbbször a tag neve csupa nagybetűvel, pl. <code>"HEAD"</code>, <code>"BODY"</code>, <code>"P"</code>)</li>
+  <li><code>childNodes</code>: az adott element “gyerekeit” tároló tömb, aminek elemei szintén element-ek</li>
+</ul>
+
+<p>Ezen kívül nagyon sok más tulajdonsággal rendelkezik minden element, de ezekkel egyelőre nem foglalkozunk.</p>
+
+<h2 id="dom-plda">DOM példa</h2>
+
+<p>Egy rövid példán keresztül mutatom be, hogy egy HTML kódból milyen DOM fa jön létre. A példában az elementeknél csak a <code>nodeName</code> és a <code>childNodes</code> tulajdonságot írtam le, a többit kihagytam. A bal oldalon a HTML, a jobb oldalon a belőle létrejövő (egyszerűsített) DOM fa látható:</p>
+
+<div style="float: left; width: 48%">
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+</pre></td><td class="code"><pre><code class="html"><span class="line"><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span><span class="line"><span class="nt">&lt;html&gt;</span>
+</span><span class="line">  <span class="nt">&lt;head&gt;</span>
+</span><span class="line">  <span class="nt">&lt;/head&gt;</span>
+</span><span class="line">  <span class="nt">&lt;body&gt;</span>
+</span><span class="line">    <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;negyzet&quot;</span>
+</span><span class="line">         <span class="na">style=</span><span class="s">&quot;width: 100px;</span>
+</span><span class="line"><span class="s">                height: 100px;</span>
+</span><span class="line"><span class="s">                background-color: black;&quot;</span>
+</span><span class="line">    <span class="nt">&gt;&lt;/div&gt;</span>
+</span><span class="line">  <span class="nt">&lt;body&gt;</span>
+</span><span class="line"><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+</div>
+<div style="float: right; width: 48%">
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+</pre></td><td class="code"><pre><code class="javascript"><span class="line"><span class="kd">var</span> <span class="nb">document</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class="line">  <span class="nx">nodeName</span><span class="o">:</span> <span class="s1">&#39;#document&#39;</span><span class="p">,</span>
+</span><span class="line">  <span class="nx">childNodes</span><span class="o">:</span> <span class="p">[{</span>
+</span><span class="line">    <span class="nx">nodeName</span><span class="o">:</span> <span class="s1">&#39;HTML&#39;</span><span class="p">,</span>
+</span><span class="line">    <span class="nx">childNodes</span><span class="o">:</span> <span class="p">[{</span>
+</span><span class="line">      <span class="nx">nodeName</span><span class="o">:</span> <span class="s1">&#39;HEAD&#39;</span><span class="p">,</span>
+</span><span class="line">      <span class="nx">childNodes</span><span class="o">:</span> <span class="p">[]</span>
+</span><span class="line">    <span class="p">},</span> <span class="p">{</span>
+</span><span class="line">      <span class="nx">nodeName</span><span class="o">:</span> <span class="s1">&#39;BODY&#39;</span><span class="p">,</span>
+</span><span class="line">      <span class="nx">childNodes</span><span class="o">:</span> <span class="p">[{</span>
+</span><span class="line">        <span class="nx">id</span><span class="o">:</span> <span class="s1">&#39;negyzet&#39;</span><span class="p">,</span>
+</span><span class="line">        <span class="nx">nodeName</span><span class="o">:</span> <span class="s1">&#39;DIV&#39;</span><span class="p">,</span>
+</span><span class="line">        <span class="nx">childNodes</span><span class="o">:</span> <span class="p">[]</span>
+</span><span class="line">      <span class="p">}]</span>
+</span><span class="line">    <span class="p">}]</span>
+</span><span class="line">  <span class="p">}]</span>
+</span><span class="line"><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+</div>
+<div style="clear: both"></div>
+
+<p>A fenti HTML kód egy fekete színű négyzetet jelenít meg, aminek az <code>id</code> attribútuma <code>negyzet</code>:</p>
+
+<div id="negyzet" style="width: 100px;
+            height: 100px;
+            background-color: black;"></div>
+<p />
+
+<p>Most változtassuk meg a négyzet színét! A lenti kódrészletet akár a konzolban (CTRL+SHIFT+J) is ki lehet próbálni ezen az oldalon:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="javascript"><span class="line"><span class="kd">var</span> <span class="nx">negyzet_element</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;negyzet&#39;</span><span class="p">);</span> <span class="c1">// A &quot;négyzet&quot; element lekérdezése id alapján</span>
+</span><span class="line"><span class="nx">negyzet_element</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">backgroundColor</span> <span class="o">=</span> <span class="s1">&#39;green&#39;</span><span class="p">;</span>          <span class="c1">// Háttérszín beállítása</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="a-jquery-fggvnyknyvtr">A jQuery függvénykönyvtár</h2>
+
+<p>Az előző kódrészletet nem magyaráztam el részletesen, mert olyan DOM függvényeket, tulajdonságokat használtunk, amikre később nem lesz szükségünk. A DOM-ról általánosságban elmondható, hogy elég bonyolult használni, és mindenre speciális függvények, objektum tulajdonságok vannak, amiket mindig a dokumentációban kell megnézni, mert nehezen megjegyezhetők.</p>
+
+<p>Ehelyett a <strong>jQuery</strong> függvénykönyvtárat fogjuk használni, ami megoldja helyettünk a DOM kezelését, és <strong>egyszerűen használható, ha értünk a CSS-hez</strong>. A DOM bevezetésre azért volt szükség, hogy lássuk, a jQuery nem varázslat, hanem olyan dolgokat könnyít meg, amit mi is meg tudnánk csinálni, csak körülményesen.</p>
+
+<p>A jQuery-t könnyen be lehet tölteni egy szkript tag segítségével:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="html"><span class="line"><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;http://code.jquery.com/jquery-1.9.1.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>A betöltött szkript egyetlen függvény típusú globális változót hoz létre, aminek a neve <code>$</code> (dollárjel).</p>
+
+<h2 id="elementek-kivlasztsa">Elementek kiválasztása</h2>
+
+<p>A jQuery-nél egy-egy művelet elvégzése (pl. a négyzet színét változtassuk meg zöldre) mindig két részre osztható:</p>
+
+<ol>
+  <li><strong>kiválasztjuk</strong> azokat <strong>az elementeket</strong>, amiken a módosítást el akarjuk végezni (pl. a “negyzet” id-vel rendelkező element)</li>
+  <li>a kiválasztott elementeken valamilyen metódus segítségével <strong>elvégezzük a módosítást</strong> (pl. a kiválasztott elementek színét megváltoztatjuk zöldre)</li>
+</ol>
+
+<p>Elementeket kiválasztani <a href="http://patrik.what.hu/web/css.html#chapter2">CSS szelektor kifejezések</a> segítségével lehet. Emlékeztetőül néhány egyszerű CSS szelektor kifejezés:</p>
+
+<ul>
+  <li><code>#azonosito</code>: azt az egy elementet választja ki, aminek az <code>id</code> attribútuma <code>azonosito</code></li>
+  <li><code>.osztaly</code>: azokat az elementeket választja ki, amiknek a <code>class</code> attribútumában szerepel az <code>osztaly</code> (a class attribútumban szóközzel elválasztva több különböző osztálynév is szerepelhet)</li>
+  <li><code>div</code>: kiválasztja az összes div típusú element-et</li>
+</ul>
+
+<p>Ha megvan a szelektor kifejezés, akkor ezt sztringként kell átadni a <code>$</code> függvénynek, az pedig visszaad egy objektumot (nevezzük ezt <em>jQuery objektumnak</em>), ami a kiválasztott elementeket tartalmazza. Később ezen az objektumon keresztül lehet majd a különféle műveleteket elvégezni.</p>
+
+<p>Néhány példa kiválasztásra:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="javascript"><span class="line"><span class="kd">var</span> <span class="nx">negyzet</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#negyzet&#39;</span><span class="p">);</span>  <span class="c1">// a &quot;negyzet&quot; id-vel rendelkező element</span>
+</span><span class="line"><span class="kd">var</span> <span class="nx">kodsorok</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;.line&#39;</span><span class="p">);</span>    <span class="c1">// a &quot;line&quot; class-ba tartozó elementek</span>
+</span><span class="line"><span class="kd">var</span> <span class="nx">bekezdesek</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;p&#39;</span><span class="p">);</span>      <span class="c1">// az összes &quot;p&quot; típusú element (vagyis a bekezdések)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="css-tulajdonsgok-mdostsa">CSS tulajdonságok módosítása</h2>
+
+<p>Ha megvan a kiválasztás, a visszakapott jQuery objektumon a <code>.css(nev, ertek)</code> metódust meghívva állíthatunk be stílus tulajdonságokat. Ahogy stíluslapok szerkesztésekor, itt is a stílus szabály nevét, és a hozzá tartozó értéket kell megadni.</p>
+
+<p>A négyzet háttérszínét tehát így lehet átállítani (a konzolban ki lehet próbálni ezen az oldalon, a fenti négyzet színét fogja átállítani!):</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="javascript"><span class="line"><span class="kd">var</span> <span class="nx">negyzet</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#negyzet&#39;</span><span class="p">);</span>            <span class="c1">// a &quot;negyzet&quot; id-vel rendelkező element kiválasztása</span>
+</span><span class="line"><span class="nx">negyzet</span><span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="s1">&#39;background-color&#39;</span><span class="p">,</span> <span class="s1">&#39;red&#39;</span><span class="p">);</span> <span class="c1">// a kiválasztott element(ek) háttérszínének átállítása vörösre</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Azt nem kell tudnunk előre, hogy a kiválasztás hány elementet ad vissza. Ha a kiválasztásban egyszerre több element szerepel, akkor egyszerre mindegyiken végzünk műveleteket, ha pedig nem szerepel egy element sem, akkor nem történik semmi.</p>
+
+<p>A következő két példa közül az első az összes bekezdés betűszínét megváltoztatja, a második viszont nem csinál semmit, mert nincs olyan element, amire illeszkedne a megadott kiválasztó kifejezés:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class="javascript"><span class="line"><span class="kd">var</span> <span class="nx">bekezdesek</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;p&#39;</span><span class="p">);</span>          <span class="c1">// a &quot;p&quot; típusú element(ek) kiválasztása</span>
+</span><span class="line"><span class="nx">bekezdesek</span><span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="s1">&#39;color&#39;</span><span class="p">,</span> <span class="s1">&#39;blue&#39;</span><span class="p">);</span>  <span class="c1">// a kiválasztott element(ek) betűszínének átállítása kékre</span>
+</span><span class="line">
+</span><span class="line"><span class="kd">var</span> <span class="nx">ures_kivalasztas</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;.nemletezo&#39;</span><span class="p">);</span> <span class="c1">// a &quot;nemletezo&quot; osztályú element(ek) kiválasztása</span>
+</span><span class="line"><span class="nx">ures_kivalasztas</span><span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="s1">&#39;color&#39;</span><span class="p">,</span> <span class="s1">&#39;blue&#39;</span><span class="p">);</span>  <span class="c1">// a kiválasztott element(ek) betűszínének átállítása kékre</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="esemnyek">Események</h2>
+
+<p>A böngésző a weboldal felhasználójának legtöbb tevékenységét (kattintás, szöveg beírása, stb.) eseményként kezeli. Egy eseményhez mindig hozzá tartozik két fontos tulajdonság (de ezen felül lehet több adata is):</p>
+
+<ul>
+  <li>az esemény típusa (pl. kattintás)</li>
+  <li>az az element, amin az esemény keletkezik (pl. az az element, amire a felhasználó rákattintott)</li>
+</ul>
+
+<p>Az <strong>eseményekre fel lehet iratkozni</strong>, ami úgy zajlik, hogy <strong>megadunk egy függvényt, ami meghívódik, ha az esemény bekövetkezik</strong>. A feliratkozásnál mindig meg kell adni, hogy melyik element milyen típusú eseményeire iratkozunk fel.</p>
+
+<p>A jQuery-ben az <code>.on(esemeny_tipusa, esemenykezelo_fv)</code> metódus használható feliratkozásra, amit azon a jQuery objektumon kell meghívni, amelyiken a várt esemény be fog következni. A két argumentum jelentése:</p>
+
+<ul>
+  <li><code>esemeny_tipusa</code>: sztring típusú argumentum, ami az esemény típusát adja meg (pl. ‘click’)</li>
+  <li><code>esemenykezelo_fv</code>: függvény típusú argumentum, ami meg fog hívódni az esemény hatására</li>
+</ul>
+
+<p>Példa a használatára:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+</pre></td><td class="code"><pre><code class="javascript"><span class="line"><span class="kd">var</span> <span class="nx">negyzet</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#negyzet&#39;</span><span class="p">);</span>
+</span><span class="line"><span class="nx">negyzet</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;click&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class="line">  <span class="k">if</span> <span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.5</span><span class="p">)</span> <span class="p">{</span>
+</span><span class="line">    <span class="nx">negyzet</span><span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="s1">&#39;background-color&#39;</span><span class="p">,</span> <span class="s1">&#39;green&#39;</span><span class="p">);</span>
+</span><span class="line">  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class="line">    <span class="nx">negyzet</span><span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="s1">&#39;background-color&#39;</span><span class="p">,</span> <span class="s1">&#39;red&#39;</span><span class="p">);</span>
+</span><span class="line">  <span class="p">}</span>
+</span><span class="line"><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>A példát érdemes a konzolban kipróbálni. Ez után a fenti négyzet kattintás hatására véletlenszerűen vörös vagy zöld színű lesz.</p>
+
+<h2 id="tovbbi-esemnyek-metdusok">További események, metódusok</h2>
+
+<p>Néhány további gyakran használt esemény típus:</p>
+
+<ul>
+  <li><code>mouseenter</code>: az egérkurzor a kiválasztott element felé kerül</li>
+  <li><code>mouseleave</code>: az egérkurzor a kiválasztott element területét elhagyja</li>
+  <li><code>dblclick</code>: dupla kattintás</li>
+  <li><code>change</code>: beviteli mezőkön (<code>&lt;input&gt;</code>) jön létre, ha megváltozik a mező tartalma</li>
+</ul>
+
+<p>Egyéb hasznos metódusok jQuery objektumokon egyszerű alkalmazások készítéséhez:</p>
+
+<ul>
+  <li><code>.val(ertek)</code>: beviteli mezők (<code>&lt;input&gt;</code>) tartalmának beállítása vagy kiolvasása (ha meg van adva az <code>ertek</code> argumentum, akkor beállít, egyébként kiolvas; <a href="http://api.jquery.com/val/">dokumentáció</a>)</li>
+  <li><code>.attr(nev, ertek)</code>: egy HTML attribútum lekérdezése, vagy beállítása (ha meg van adva az <code>ertek</code> argumentum, akkor beállít, egyébként kiolvas; <a href="http://api.jquery.com/attr/">dokumentáció</a>)</li>
+  <li><code>.hide()</code>: a kiválasztott elementek elrejtése (<a href="http://api.jquery.com/hide/">dokumentáció</a>)</li>
+  <li><code>.show()</code>: a kiválasztott elementek mutatása, ha el voltak rejtve (<a href="http://api.jquery.com/show/">dokumentáció</a>)</li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Gábor Molnár</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-12T20:16:00+02:00" pubdate data-updated="true">May 12<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/javascript-programozas-jegyzet/'>JavaScript programozás jegyzet</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/05/05/javascript-programozas-jegyzet-tombok/" title="Previous Post: JavaScript programozás - Tömbök">&laquo; JavaScript programozás - Tömbök</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/06/02/irssi-in-the-browser/" title="Next Post: IRSSI in the browser">IRSSI in the browser &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <!--<h1>Comments</h1>-->
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/13/ucsb-ictf-2013-uranus/">UCSB iCTF 2013 - The Uranus service</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/09/25/gsoc-wrap-up/">GSoC - wrap up</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/09/15/gsoc-week-number-13/">GSoC week #13</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/09/09/gsoc-week-number-12/">GSoC week #12</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/09/03/gsoc-week-number-11/">GSoC week #11</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Gábor Molnár -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'gabor-molnar';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://gabor.molnar.es/blog/2013/05/12/javascript-programozas-jegyzet-a-jquery-fuggvenykonyvtar/';
+        var disqus_url = 'http://gabor.molnar.es/blog/2013/05/12/javascript-programozas-jegyzet-a-jquery-fuggvenykonyvtar/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+</body>
+</html>

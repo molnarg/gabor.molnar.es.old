@@ -1,0 +1,862 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: JavaScript programozás jegyzet | M.G.]]></title>
+  <link href="http://gabor.molnar.es/blog/categories/javascript-programozas-jegyzet/atom.xml" rel="self"/>
+  <link href="http://gabor.molnar.es/"/>
+  <updated>2013-12-14T15:58:10+01:00</updated>
+  <id>http://gabor.molnar.es/</id>
+  <author>
+    <name><![CDATA[Gábor Molnár]]></name>
+    <email><![CDATA[gabor@molnar.es]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[JavaScript programozás - A jQuery függvénykönyvtár]]></title>
+    <link href="http://gabor.molnar.es/blog/2013/05/12/javascript-programozas-jegyzet-a-jquery-fuggvenykonyvtar/"/>
+    <updated>2013-05-12T20:16:00+02:00</updated>
+    <id>http://gabor.molnar.es/blog/2013/05/12/javascript-programozas-jegyzet-a-jquery-fuggvenykonyvtar</id>
+    <content type="html"><![CDATA[<p>A böngésző az oldal betöltésekor beolvassa a HTML fájlt, feldolgozza a stíluslapokat és lefuttatja a hivatkozott szkripteket. Ez azonban csak a kezdet :)</p>
+
+<p>A JavaScript segítségével könnyen interaktívvá tehető egy weboldal. Ehhez két nagyon fontos eszközünk is van:</p>
+
+<ul>
+  <li>lehetséges a felhasználó tevékenységeire reagálni (egérkattintás, szöveg beírása, stb)</li>
+  <li>meg lehet változtatni a weboldal tartalmát a betöltődés után</li>
+</ul>
+
+<p>Ez a két dolog már elég ahhoz, hogy egyszerű webalkalmazásokat készítsünk.</p>
+
+<p>A beépített függvények viszont, amikkel ezeket a funkciókal elérhetjük, nem mindig egyszerűen használhatók, és van, hogy böngészőnként eltérően működnek. Szerencsére több olyan függvénykönyvtár is van, ami leegyszerűsíti a dolgunkat. Az egyik ilyen, nagyon népszerű függvénykönyvtár a <a href="http://jquery.com/">jQuery</a>, ennek a használatát fogom röviden bemutatni.</p>
+
+<!-- more -->
+
+<h2 id="document-object-model">Document Object Model</h2>
+
+<p><strong>A böngésző</strong> a HTML fájl beolvasásakor sorról sorra halad, és <strong>a beolvasott HTML tag-ekből objektumokat hoz létre</strong>. Ezeket az objektumokat <strong>element</strong>-eknek, <strong>elem</strong>eknek vagy <strong>node</strong>-oknak nevezzük, és JavaScript-ből is elérhetőek. Az element objektumoknak olyan metódusai, és tulajdonságai vannak, amiket felhasználva lehetséges az adott element adatait (pl. hol helyezkedik el a képernyőn, stílus adatok, stb.) kiolvasni és módosítani.</p>
+
+<p>Mivel a HTML-ben az egyes tag-eknek lehetnek “gyerekei”, ezért a létrejövő objektumhalmaz is hierarchikusan épül fel. A hierarchia legfelső szintjén a <code>document</code> objektum van, ennek a gyereke a <code>&lt;html&gt;</code> tag-nek megfelelő element, ennek pedig a <code>&lt;head&gt;</code> és <code>&lt;body&gt;</code> tag-eknek megfelelő objektumok, stb.</p>
+
+<p><strong>Ezt a hierarchikus szerkezetet nevezzük Document Object Model (DOM) fának.</strong></p>
+
+<p>Két jellemző tulajdonság, amivel minden element rendelkezik:</p>
+
+<ul>
+  <li><code>nodeName</code>: az adott element típusát tároló sztring (legtöbbször a tag neve csupa nagybetűvel, pl. <code>"HEAD"</code>, <code>"BODY"</code>, <code>"P"</code>)</li>
+  <li><code>childNodes</code>: az adott element “gyerekeit” tároló tömb, aminek elemei szintén element-ek</li>
+</ul>
+
+<p>Ezen kívül nagyon sok más tulajdonsággal rendelkezik minden element, de ezekkel egyelőre nem foglalkozunk.</p>
+
+<h2 id="dom-plda">DOM példa</h2>
+
+<p>Egy rövid példán keresztül mutatom be, hogy egy HTML kódból milyen DOM fa jön létre. A példában az elementeknél csak a <code>nodeName</code> és a <code>childNodes</code> tulajdonságot írtam le, a többit kihagytam. A bal oldalon a HTML, a jobb oldalon a belőle létrejövő (egyszerűsített) DOM fa látható:</p>
+
+<div style="float: left; width: 48%">
+```html
+&lt;!DOCTYPE html&gt;
+<html>
+  <head>
+  </head>
+  <body>
+    <div id="negyzet" style="width: 100px;
+                height: 100px;
+                background-color: black;"></div>
+  <body>
+
+```
+
+<div style="float: right; width: 48%">
+```javascript
+var document = {
+  nodeName: '#document',
+  childNodes: [{
+    nodeName: 'HTML',
+    childNodes: [{
+      nodeName: 'HEAD',
+      childNodes: []
+    }, {
+      nodeName: 'BODY',
+      childNodes: [{
+        id: 'negyzet',
+        nodeName: 'DIV',
+        childNodes: []
+      }]
+    }]
+  }]
+};
+```
+</div>
+<div style="clear: both"></div>
+
+A fenti HTML kód egy fekete színű négyzetet jelenít meg, aminek az `id` attribútuma `negyzet`:
+
+<div id="negyzet" style="width: 100px;
+            height: 100px;
+            background-color: black;"></div>
+<p />
+
+Most változtassuk meg a négyzet színét! A lenti kódrészletet akár a konzolban (CTRL+SHIFT+J) is ki lehet próbálni ezen az oldalon:
+
+```javascript
+var negyzet_element = document.getElementById('negyzet'); // A "négyzet" element lekérdezése id alapján
+negyzet_element.style.backgroundColor = 'green';          // Háttérszín beállítása
+```
+
+A jQuery függvénykönyvtár
+-------------------------
+
+Az előző kódrészletet nem magyaráztam el részletesen, mert olyan DOM függvényeket, tulajdonságokat használtunk, amikre később nem lesz szükségünk. A DOM-ról általánosságban elmondható, hogy elég bonyolult használni, és mindenre speciális függvények, objektum tulajdonságok vannak, amiket mindig a dokumentációban kell megnézni, mert nehezen megjegyezhetők.
+
+Ehelyett a **jQuery** függvénykönyvtárat fogjuk használni, ami megoldja helyettünk a DOM kezelését, és **egyszerűen használható, ha értünk a CSS-hez**. A DOM bevezetésre azért volt szükség, hogy lássuk, a jQuery nem varázslat, hanem olyan dolgokat könnyít meg, amit mi is meg tudnánk csinálni, csak körülményesen.
+
+A jQuery-t könnyen be lehet tölteni egy szkript tag segítségével:
+
+```html
+<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+```
+
+A betöltött szkript egyetlen függvény típusú globális változót hoz létre, aminek a neve `$` (dollárjel).
+
+Elementek kiválasztása
+----------------------
+
+A jQuery-nél egy-egy művelet elvégzése (pl. a négyzet színét változtassuk meg zöldre) mindig két részre osztható:
+
+1. **kiválasztjuk** azokat **az elementeket**, amiken a módosítást el akarjuk végezni (pl. a "negyzet" id-vel rendelkező element)
+2. a kiválasztott elementeken valamilyen metódus segítségével **elvégezzük a módosítást** (pl. a kiválasztott elementek színét megváltoztatjuk zöldre)
+
+Elementeket kiválasztani [CSS szelektor kifejezések](http://patrik.what.hu/web/css.html#chapter2) segítségével lehet. Emlékeztetőül néhány egyszerű CSS szelektor kifejezés:
+
+* `#azonosito`: azt az egy elementet választja ki, aminek az `id` attribútuma `azonosito`
+* `.osztaly`: azokat az elementeket választja ki, amiknek a `class` attribútumában szerepel az `osztaly` (a class attribútumban szóközzel elválasztva több különböző osztálynév is szerepelhet)
+* `div`: kiválasztja az összes div típusú element-et
+
+Ha megvan a szelektor kifejezés, akkor ezt sztringként kell átadni a `$` függvénynek, az pedig visszaad egy objektumot (nevezzük ezt *jQuery objektumnak*), ami a kiválasztott elementeket tartalmazza. Később ezen az objektumon keresztül lehet majd a különféle műveleteket elvégezni.
+
+Néhány példa kiválasztásra:
+
+```javascript
+var negyzet = $('#negyzet');  // a "negyzet" id-vel rendelkező element
+var kodsorok = $('.line');    // a "line" class-ba tartozó elementek
+var bekezdesek = $('p');      // az összes "p" típusú element (vagyis a bekezdések)
+```
+
+CSS tulajdonságok módosítása
+----------------------------
+
+Ha megvan a kiválasztás, a visszakapott jQuery objektumon a `.css(nev, ertek)` metódust meghívva állíthatunk be stílus tulajdonságokat. Ahogy stíluslapok szerkesztésekor, itt is a stílus szabály nevét, és a hozzá tartozó értéket kell megadni.
+
+A négyzet háttérszínét tehát így lehet átállítani (a konzolban ki lehet próbálni ezen az oldalon, a fenti négyzet színét fogja átállítani!):
+
+```javascript
+var negyzet = $('#negyzet');            // a "negyzet" id-vel rendelkező element kiválasztása
+negyzet.css('background-color', 'red'); // a kiválasztott element(ek) háttérszínének átállítása vörösre
+```
+
+Azt nem kell tudnunk előre, hogy a kiválasztás hány elementet ad vissza. Ha a kiválasztásban egyszerre több element szerepel, akkor egyszerre mindegyiken végzünk műveleteket, ha pedig nem szerepel egy element sem, akkor nem történik semmi.
+
+A következő két példa közül az első az összes bekezdés betűszínét megváltoztatja, a második viszont nem csinál semmit, mert nincs olyan element, amire illeszkedne a megadott kiválasztó kifejezés:
+
+```javascript
+var bekezdesek = $('p');          // a "p" típusú element(ek) kiválasztása
+bekezdesek.css('color', 'blue');  // a kiválasztott element(ek) betűszínének átállítása kékre
+
+var ures_kivalasztas = $('.nemletezo'); // a "nemletezo" osztályú element(ek) kiválasztása
+ures_kivalasztas.css('color', 'blue');  // a kiválasztott element(ek) betűszínének átállítása kékre
+```
+
+Események
+---------
+
+A böngésző a weboldal felhasználójának legtöbb tevékenységét (kattintás, szöveg beírása, stb.) eseményként kezeli. Egy eseményhez mindig hozzá tartozik két fontos tulajdonság (de ezen felül lehet több adata is):
+
+* az esemény típusa (pl. kattintás)
+* az az element, amin az esemény keletkezik (pl. az az element, amire a felhasználó rákattintott)
+
+Az **eseményekre fel lehet iratkozni**, ami úgy zajlik, hogy **megadunk egy függvényt, ami meghívódik, ha az esemény bekövetkezik**. A feliratkozásnál mindig meg kell adni, hogy melyik element milyen típusú eseményeire iratkozunk fel.
+
+A jQuery-ben az `.on(esemeny_tipusa, esemenykezelo_fv)` metódus használható feliratkozásra, amit azon a jQuery objektumon kell meghívni, amelyiken a várt esemény be fog következni. A két argumentum jelentése:
+
+* `esemeny_tipusa`: sztring típusú argumentum, ami az esemény típusát adja meg (pl. 'click')
+* `esemenykezelo_fv`: függvény típusú argumentum, ami meg fog hívódni az esemény hatására
+
+Példa a használatára:
+
+```javascript
+var negyzet = $('#negyzet');
+negyzet.on('click', function() {
+  if (Math.random() &lt; 0.5) {
+    negyzet.css('background-color', 'green');
+  } else {
+    negyzet.css('background-color', 'red');
+  }
+});
+```
+
+A példát érdemes a konzolban kipróbálni. Ez után a fenti négyzet kattintás hatására véletlenszerűen vörös vagy zöld színű lesz.
+
+További események, metódusok
+----------------------------
+
+Néhány további gyakran használt esemény típus:
+
+* `mouseenter`: az egérkurzor a kiválasztott element felé kerül
+* `mouseleave`: az egérkurzor a kiválasztott element területét elhagyja
+* `dblclick`: dupla kattintás
+* `change`: beviteli mezőkön (`<input />`) jön létre, ha megváltozik a mező tartalma
+
+Egyéb hasznos metódusok jQuery objektumokon egyszerű alkalmazások készítéséhez:
+
+* `.val(ertek)`: beviteli mezők (`<input />`) tartalmának beállítása vagy kiolvasása (ha meg van adva az `ertek` argumentum, akkor beállít, egyébként kiolvas; [dokumentáció](http://api.jquery.com/val/))
+* `.attr(nev, ertek)`: egy HTML attribútum lekérdezése, vagy beállítása (ha meg van adva az `ertek` argumentum, akkor beállít, egyébként kiolvas; [dokumentáció](http://api.jquery.com/attr/))
+* `.hide()`: a kiválasztott elementek elrejtése ([dokumentáció](http://api.jquery.com/hide/))
+* `.show()`: a kiválasztott elementek mutatása, ha el voltak rejtve ([dokumentáció](http://api.jquery.com/show/))
+
+
+</body></body></html></div>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[JavaScript programozás - Tömbök]]></title>
+    <link href="http://gabor.molnar.es/blog/2013/05/05/javascript-programozas-jegyzet-tombok/"/>
+    <updated>2013-05-05T18:31:00+02:00</updated>
+    <id>http://gabor.molnar.es/blog/2013/05/05/javascript-programozas-jegyzet-tombok</id>
+    <content type="html"><![CDATA[<p>Sokszor van arra szükség, hogy valamilyen elemek listáját kezeljük. Egy webshop esetén például:</p>
+
+<ul>
+  <li>termékek listája</li>
+  <li>ügyfelek listája</li>
+  <li>megrendelések listája</li>
+</ul>
+
+<p>Az ilyen adatsorok kezelésére az összes programozási nyelv biztosít lehetőséget. Ezeket <strong>tömbök</strong>nek (angolul: <strong>array</strong>), vagy <strong>listák</strong>nak szokás hívni (a két fogalom között sok nyelv különbséget tesz valamilyen szempont alapján, a JavaScript-ben viszont a kettő között nincs különbség).</p>
+
+<!-- more -->
+
+<h2 id="a-tmbk-mint-objektumok">A tömbök mint objektumok</h2>
+
+<p>A tömbök jól modellezhetők hagyományos JavaScript objektumokkal. Egy terméklistát egy webalkalmazásban kódjában így is megadhatunk:</p>
+
+<p><code>javascript
+var termeklista = {
+  0: 'zöld pengető',
+  1: 'kék pengető',
+  2: 'húrok',
+  3: 'erősítő',
+  4: 'hangfal'
+}
+</code></p>
+
+<p>A tömbök nagyon gyakran előjönnek a programozásban, ezért létezik egy kényelmesebben használható <strong>rövidített formátum</strong>, amivel gyakorlatilag ugyanezt az objektumot lehet megadni (a főbb különbségekről később még lesz szó):</p>
+
+<p><code>javascript
+var termeklista = ['zöld pengető', 'kék pengető', 'húrok', 'erősítő'];
+</code></p>
+
+<p><strong>Egy tömb egy eleme bármi lehet, amit egy változó tudna tárolni</strong> (szám, sztring, objektum, függvény, stb.). A fenti példában a tömb összes eleme sztring.</p>
+
+<h2 id="hozzfrs-a-tmb-elemeihez">Hozzáférés a tömb elemeihez</h2>
+
+<p>A tömbök olyanok, mint a hagyományos objektumok. Objektumok esetében az tulajdonságokat így szokás elérni: <code>objektum.tulajdonság_neve</code>. Ez viszont csak akkor működik, ha az tulajdonság neve megfelel bizonyos szabályoknak. Az egyik ilyen szabály, hogy a név ne kezdődjön számmal, emiatt a fent létrehozott objektum tulajdonságait nem fogjuk tudni elérni így: <code>termeklista.0</code>, <code>termeklista.1</code>, stb.</p>
+
+<p>Ehelyett az objektumoknál látott másik módszert kell használni: <code>objektum['tulajdonság_neve']</code>. A szögletes zárójelben sztringet kell megadni, mert a tulajdonság neve mindig sztring. Ebből az is következik, hogy a tömb tulajdonságainak nevei valójában sztring típusúak (pl: <code>'0'</code>, <code>'1'</code>, <code>'2'</code>, nem pedig: <code>0</code>, <code>1</code>, <code>2</code>). Ez azért nem gond, mert ha mégis számot adunk meg a szögletes zárójelben, akkor azt a JavaScript automatikusan sztringgé alakítja át, tehát a következő módszer működni fog: <code>termeklista[0]</code>, <code>termeklista[1]</code>, <code>termeklista[2]</code>, stb. (ugyanennek egy kevésbé kényelmes leírása ez: <code>termeklista['0']</code>, <code>termeklista['1']</code>, <code>termeklista['2']</code>).</p>
+
+<p>Tehát röviden: <strong>egy tömb <em>n</em>-edik eleméhez úgy férünk hozzá, hogy a tömb referenciája után szögletes zárójelben megadjuk az <em>n</em>-et</strong>. Az <em>n</em> lehet bármilyen kifejezés, aminek a kiértékelése számot eredményez, például:</p>
+
+<ul>
+  <li>egy konkrét szám</li>
+  <li>számot tartalmazó változó</li>
+  <li>bármilyen matematikai kifejezés, ami számot eredményez (pl. <code>1 + 2</code>, <code>3 * a</code>)</li>
+</ul>
+
+<p>Az előbb létrehozott terméklista néhány elemét például így lehetne kiiratni, illetve megváltoztatni:</p>
+
+<p>```javascript
+document.writeln(‘A terméklista 3. eleme: ‘);
+document.writeln(termeklista[2]);</p>
+
+<p>document.writeln(‘A terméklista 5. eleme: ‘);
+document.writeln(termeklista[4]);</p>
+
+<p>// A 4. elem nevét megváltoztatjuk:
+termeklista[3] = ‘zöld erősítő’;
+```</p>
+
+<p><strong>A tömböket mindig 0-tól számozzuk</strong>, ezért van az, hogy a 3. elemre a 2-es sorszámmal, az 5. elemre pedig a 4-es sorszámmal hivatkozunk.</p>
+
+<h2 id="bejrs-for-cikussal-s-a-length-tulajdonsg">Bejárás <code>for</code> cikussal, és a <code>length</code> tulajdonság</h2>
+
+<p>Ha tudjuk a tömb hosszát, akkor akár <code>for</code> cikust is használhatunk a tömb bejárására:</p>
+
+<p><code>javascript
+for (var i = 0; i &lt; 5; i++) {
+  document.writeln('A terméklista ' + i + '. eleme: ');
+  document.writeln(termeklista[i]);
+}
+</code></p>
+
+<p>A tömbök olyanok, mint a hagyományos objektumok, viszont van néhány plusz tulajdonságuk. A tömb szintaxis használatával valójában mindig a tömb (<code>Array</code>) osztály egy példánya jön létre. Ennek az osztálynak van néhány hasznos tulajdonsága illetve metódusa (ezeket minden egyes tömb példány megkapja). Az egyik ilyen <strong>a <code>length</code> tulajdonság</strong>, ami <strong>megadja, hogy hány eleme van a tömbnek</strong>. Ez akkor hasznos, ha ezt nem tudjuk előre, például egy adatbázisból kapjuk meg, vagy a felhasználó adja meg a tömböt.</p>
+
+<p>A terméklista kiíratása a lista hosszának megadása nélkül:</p>
+
+<p><code>javascript
+for (var i = 0; i &lt; termeklista.length; i++) {
+  document.writeln('A terméklista ' + i + '. eleme: ');
+  document.writeln(termeklista[i]);
+}
+</code></p>
+
+<h2 id="elemek-hozzadsa-trlse">Elemek hozzáadása, törlése</h2>
+
+<p>A tömböket termszetesen lehet módosítani a létrehozás után is. Erre használhatóak az objektumok tulajdonságainak állítgatására szolgáló módszerek (pl. új termék felvétele: <code>termeklista[5] = 'tremolo kar';</code>, az ötödik termék törlése: <code>delete termeklista[4];</code>). Leggyakrabban a tömb első, illetve utolsó elemén kell műveleteket végezni, erre pedig vannak kényelmesebben használható metódusai is a tömb osztálynak:</p>
+
+<ul>
+  <li><code>tomb.pop()</code>: törli, és visszaadja a tömb utolsó elemét</li>
+  <li><code>tomb.push(uj_elem)</code>: a tömb végére beszúrja a megadott értéket</li>
+  <li><code>tomb.shift()</code>: törli, és visszaadja a tömb első elemét (a tömb minden eleme 1-el előrébb ‘csúszik’)</li>
+  <li><code>tomb.unshift(uj_elem)</code>: a tömb elejére beszúrja a megadott értéket (a tömb minden eleme 1-el hátrébb ‘csúszik’)</li>
+</ul>
+
+<p>A következő példában a megjegyzésekben szerepel a tömb aktuális állapota az egyes műveletek után:</p>
+
+<p>```javascript
+var termeklista = [‘zöld pengető’, ‘kék pengető’, ‘húrok’, ‘erősítő’];
+// [‘zöld pengető’, ‘kék pengető’, ‘húrok’, ‘erősítő’]</p>
+
+<p>var utolso_elem = termeklista.pop();
+document.write(utolso_elem); // kiírja, hogy ‘erősítő’
+// [‘zöld pengető’, ‘kék pengető’, ‘húrok’]</p>
+
+<p>termeklista.push(‘pick-up’);
+// [‘zöld pengető’, ‘kék pengető’, ‘húrok’, ‘pick-up’]</p>
+
+<p>var elso_elem = termeklista.shift();
+document.write(utolso_elem); // kiírja, hogy ‘zöld pengető’
+// [‘kék pengető’, ‘húrok’, ‘pick-up’]</p>
+
+<p>termeklista.unshift(‘hangoló’);
+// [‘hangoló’, ‘kék pengető’, ‘húrok’, ‘pick-up’]
+```</p>
+
+<h2 id="egyb-metdusok">Egyéb metódusok</h2>
+
+<p>A tömb osztálynak sok hasznos metódusa van, amiket itt nincs hely bemutatni:</p>
+
+<ul>
+  <li>másolás: <a href="https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/slice">slice</a></li>
+  <li>összefűzés: <a href="https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/concat">concat</a></li>
+  <li>átrendezés, törlés: <a href="https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/splice">splice</a>, <a href="https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/reverse">reverse</a>, <a href="https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/sort">sort</a></li>
+  <li>elemek szűrése, helyettesítése: <a href="https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/map">map</a>, <a href="https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/filter">filter</a></li>
+  <li>sztring létrehozása az elemekből: <a href="https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/join">join</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[JavaScript programozás - Fájlok és globális változók]]></title>
+    <link href="http://gabor.molnar.es/blog/2013/05/05/javascript-programozas-jegyzet-fajlok-es-globalis-valtozok/"/>
+    <updated>2013-05-05T10:52:00+02:00</updated>
+    <id>http://gabor.molnar.es/blog/2013/05/05/javascript-programozas-jegyzet-fajlok-es-globalis-valtozok</id>
+    <content type="html"><![CDATA[<p>A legtöbb programozási nyelvben lehetőség van arra, hogy <strong>a program egyes részeit külön fájlokban tároljuk</strong>. Egy-egy fájlban általában logikailag összetartozó programkódok vannak: egy webshop programban például valószínűleg nem egy fájlban található a számlakezelés és a raktárkezelés. A számlakezelés lehet hogy több fájlba van szétszedve, attól függően, hogy mekkora a kód mérete, és hogy mennyire elkülöníthetőek az egyes részek egymástól. Az, hogy mennyi, és milyen programkód kerül egy fájlba, az a programozó döntése, hasonlóan ahhoz, ahogy egy író is maga dönti el, hogy a könyvét hogyan bontja részekre, fejezetekre és bekezdésekre. A fájlokra bontással a kód átláthatóbb, könnyebben olvasható lesz (ahogy egy könyv is könnyebben olvasható, ha fejezetekre van osztva).</p>
+
+<p>Az egyes programrészeknek valamilyen módon együtt kell dolgozniuk. Ez JavaScript-ben úgy valósul meg, hogy minden  fájl elérhetővé tesz bizonyos változókat a többi programrész számára (ezeket hívjuk <strong>globális változók</strong>nak), valamint használhatja a többi programrész által elérhetővé tett globális változókat.</p>
+
+<p>Sokszor használunk olyan programrészeket, amiket mások írtak. Az olyan programrészleteket, amiket szándékosan arra terveztek, hogy mások használják őket a saját programjukban, <strong>függvénykönyvtár</strong>aknak nevezzük. Ezeket legtöbbször külön fájlként lehet letölteni, és előre meghatározott globális változókat hoznak létre. Ezek a globális változók általában függvények (innen ered az elnevezés), osztályok vagy objektumok, de természetesen tárolhatnak bármilyen más értéket is (szám, sztring, stb.). Az, hogy hogyan kell használni ezeket a globális változókat (pl. milyen argumentumokat kell átadni az adott függvényeknek) a függvénykönyvtár dokumentációja írja le. Ezt nevezzük a könyvtár <strong>API</strong>-jának (Application Programming Interface).</p>
+
+<!-- more -->
+
+<h2 id="html-s-javascript-fjlok">HTML és JavaScript fájlok</h2>
+
+<p>Amikor egy weboldalon futtatunk JavaScript kódot, akkor a kódot <code>&lt;script&gt;</code> tag-ek közé írva adjuk meg. Egy HTML oldalon akár több ilyen is lehet. Egy-egy <code>&lt;script&gt;</code> tag tartalmát <strong>külső fájlként is megadhatjuk az <code>src</code> attribútum használatával</strong>:</p>
+
+<p>```html index.html
+&lt;!DOCTYPE html&gt;</p>
+<html>
+<head />
+<body>
+
+<!-- Ez egy 'beágyazott' script tag, ami kiírja, hogy "16 * 42 = 672" -->
+<script>
+var szorzat = 16 * 42;
+document.write('16 * 42 = ' + szorzat);
+</script>
+
+<!-- Ez egy külső fájlként hivatkozott script tag. -->
+<script src="elso.js"></script>
+
+<!-- Ez egy másik, külső fájlként hivatkozott script tag. -->
+<script src="masodik.js"></script>
+
+<body>
+
+```
+
+Ilyenkor a böngésző a következőképpen jár el:
+
+1. lefuttatja az első, beágyazott kódrészletet (ami kiírja hogy `16 * 42 = 672`)
+2. letölti az `elso.js` fájlt (vagy beolvassa a lemezről, ha a HTML helyi fájl)
+3. lefuttatja a letöltött kódrészletet
+4. letölti a `masodik.js` fájlt (vagy beolvassa a lemezről, ha a HTML helyi fájl)
+5. lefuttatja a letöltött kódrészletet
+
+Az `elso.js` és a `masodik.js` tartalma ilyenkor mindig JavaScript kód (HTML nélkül), például:
+
+```javascript elso.js
+// Az elso.js fájl tartalma:
+document.write('Ezt a szoveget az elso fajl irta ki.');
+```
+
+```javascript masodik.js
+// A masodik.js fájl tartalma:
+document.write('Ezt a szoveget a masodik fajl irta ki.');
+```
+
+Ha az `src` attribútum csak egy fájlnevet tartalmaz, akkor a böngésző a fájlt abban a mappában fogja keresni, ahol a HTML fájl van. Tartalmazhat teljes URL-t is (pl. `http://sajatweboldalam.hu/elso.js`), ilyenkor a fájl az adott helyről tölti le.
+
+Globális változók
+-----------------
+
+Amikor egy függvényben a `var` kulcsszót használva létrehozunk egy változót, akkor az a változó csak a függvényen belül látszik. Az ilyen változókat **lokális változók**nak nevezzük. Ha nem egy függvényen belül használjuk a `var` kulcsszót változó létrehozására, akkor globális változó jön létre. Az eddigi programokban tehát legtöbbször globális változókkal dolgoztunk.
+
+A következő példában az `elso.js` egy globális változót hoz létre, a `masodik.js` pedig ezt a változót iratja ki:
+
+```javascript elso.js
+// Az elso.js fájl tartalma:
+var n = 42;
+```
+
+```javascript masodik.js
+// A masodik.js fájl tartalma:
+document.write("Az elso.js altal letrehozott globalis valtozo tartalma: " + n);
+```
+
+A HTML-ben a következő szöveget fogjuk látni: `Az elso.js altal letrehozott globalis valtozo tartalma: 42`.
+
+Létezik másik két módszer is a globális változók létrehozására, ami akár függvényeken belül is használható:
+
+* `window.x = 5;`
+  * ha van `x` nevű globális változó: értékül adjuk neki az 5-öt
+  * ha nincs `x` nevű globális változó: létrejön, és értékül adjuk neki az 5-öt
+* `y = 10;`
+  * ha van `y` nevű lokális változó: értékül adjuk neki a 10-et
+  * ha van `y` nevű globális változó: értékül adjuk neki a 10-et
+  * ha nincs `y` nevű lokális vagy globális változó: létrejön az `y` *globális* változó, és értékül adjuk neki a 10-et
+
+Látható, hogy a második módszer kísértetiesen hasonlít a lokális változó létrehozására használható `var y = 10;`-hez. Ha nem figyelünk oda, akkor könnyen létrehozhatunk globális változókat lokális változók helyett függvények kódjában is. Hogy ez miért lehet baj, azt a következő rész mutatja be.
+
+Ha lehet, használjunk lokális változókat!
+-----------------------------------------
+
+Függvényekben nagyon könnyen hibákhoz vezet az, ha mindenre globális változót használunk.
+
+Egy példa arra, hogy milyen hibákról van szó:
+
+```javascript
+// Program, ami kiiírja az összes egyjegyű szám négyzetét.
+
+var negyzet_kiiras = function(x) {
+  i = x * x;  // Lemaradt a var kulcsszó, ezért itt a globális i változónak adunk értéket
+  document.write(x + " négyzete: " + i + '<br />');
+};
+
+// Az 'i' ciklusváltozó globális, mert nem függvényben hoztuk létre
+for (var i = 0; i &lt; 10; i++) {
+  negyzet_kiiras(i);
+}
+```
+
+Ez a program a következőket írja ki:
+
+```
+0 négyzete: 0
+1 négyzete: 1
+2 négyzete: 4
+5 négyzete: 25
+```
+
+A függvényben egy elírás miatt lemaradt a `var`, ezért a globális `i` változót használta egy ideiglenes érték eltárolására. Ezt a változót használtuk a for ciklusban is, ez okozta a problémát. Az ilyen hibák nehezen felderíthetők, mert csak ritkán jönnek elő (pl. csak akkor, ha a ciklusváltozó neve éppen `i`), és nagyon furcsa hatásokat tudnak produkálni. A javított `negyzet_kiiras` függvény, és a program helyes kimenete:
+
+```javascript
+var negyzet_kiiras = function(x) {
+  var i = x * x;
+  document.write(x + " négyzete: " + i + '<br />');
+};
+```
+
+```
+0 négyzete: 0
+1 négyzete: 1
+2 négyzete: 4
+3 négyzete: 9
+4 négyzete: 16
+5 négyzete: 25
+6 négyzete: 36
+7 négyzete: 49
+8 négyzete: 64
+9 négyzete: 81
+```
+
+Egy egyszerű szabály betartásával megelőzhetőek a hasonló problémák: **a függvények ideiglenes változói mindig legyenek lokálisak!** A lokális változók a függvényen belül mindig "eltakarják" az ugyanolyan nevű globális változókat, tehát nem kell körültekintőnek lenni a lokális változók elnevezésénél, lehet akár azonos neve is egy globális változóval.
+
+Függvénykönyvtár példa
+----------------------
+
+Rengeteg letölthető JavaScript függvénykönyvtár létezik, amik a legkülönfélébb dolgokat tesznek lehetővé. Egy népszerű függvénykönyvtár pl. az underscore. Ez egyetlen globális változót hoz létre, aminek a neve `_` (alulvonás) és objektum típusú. Ennek az objektumnak sok metódusa van, mindegyik más feladatot képes elvégezni. Az API dokumentáció a függvénykönyvtár weboldalán megtalálható: [http://underscorejs.org](http://underscorejs.org). Az `_.random` metódus véletlen számok generálására használható ([dokumentáció](http://underscorejs.org/#random)), például így:
+
+```html otoslotto.html
+&lt;!DOCTYPE html&gt;
+<html>
+<head />
+<body>
+
+<!-- Az underscore betöltése. Léterjön a _ globális változó. -->
+<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore.js">
+</script>
+
+<script>
+document.write('Az otos lotto mai nyeroszamai:<br>');
+for (var i = 0; i < 5; i++) {
+  document.write(_.random(1, 90))
+  document.write(' ')
+}
+</script>
+
+<body>
+
+```
+
+</body></body></html></body></body></html>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[JavaScript programozás - Objektumok]]></title>
+    <link href="http://gabor.molnar.es/blog/2013/05/05/javascript-programozas-jegyzet-objektumok/"/>
+    <updated>2013-05-05T10:50:00+02:00</updated>
+    <id>http://gabor.molnar.es/blog/2013/05/05/javascript-programozas-jegyzet-objektumok</id>
+    <content type="html"><![CDATA[<p>JavaScript-ben (és a legtöbb programozási nyelvben) két alapvető érték típus van: az <strong>egyszerű értékek</strong>, és az <strong>objektumok</strong>. Az egyszerű értékek közé tartoznak a <strong>számok</strong>, <strong>sztringek</strong>, és a <strong>logikai értékek</strong> (<code>true</code>, <code>false</code>), ezeket már ismerjük.</p>
+
+<p>Az objektumok legfontosabb jellemzője, hogy <strong>tulajdonságokkal (angolul property) rendelkeznek</strong>. Egy tulajdonságnak mindig <strong>neve</strong>, és <strong>értéke</strong> van (például a tulajdonság neve “magasság” és az értéke “170cm”).</p>
+
+<p>Objektumokat használva elérhetjük, hogy az összetartozó adatokat mindig együtt kezeljük. Például egy könyvtár szoftverben az egyes könyveknek megfeleltethetünk egy-egy objektumot. Ezeknek az objektumoknak a tulajdonságai lehetnek például a következők: a könyv címe, azonosítója, a könyvet kikölcsönző olvasók listája, stb. Ilyen módon mindig egy helyen elérhető lesz a könyv összes adata, nem kell őket külön változókban tárolni. Ez megkönnyíti a könyvön végzett műveleteket is, például egy könyv leselejtezésekor egyszerre az összes adatát törölni kell a rendszerből.</p>
+
+<!-- more -->
+
+<h2 id="objektumok-a-ltrehozsa">Objektumok a létrehozása</h2>
+
+<p>Objektumokat több módon lehet létrehozni. Az első, legegyszerűbb lehetőség, hogy <strong>felsoroljuk a tulajdonságait</strong> a következő módon:</p>
+
+<p><code>javascript
+var konyv1 = {
+  szerzo: "Douglas Adams",
+  cim: "Galaxis útikalauz stopposoknak",
+  kiadas: 1979,
+  azonosito: 42
+};
+</code></p>
+
+<p>Ezzel létrehoztunk egy objektumot, aminek a tulajdonságai: az <code>cim</code>, a <code>szerzo</code>, az <code>azonosito</code> és a <code>kiadas</code>. A <code>konyv1</code> változóban eltároltuk az objektum <strong>referenciáját</strong>.</p>
+
+<p>Az egyes tulajdonságok értéke bármi lehet (szám, sztring, logikai érték, függvény referencia, objektum referencia), a fenti példában minden tulajdonság értéke sztring vagy szám.</p>
+
+<h2 id="objektumok-hasznlata">Objektumok használata</h2>
+
+<p>A létrehozás után így érhetjük el az egyes tulajdonságok értékét:</p>
+
+<p><code>javascript
+console.log(konyv1.cim);
+console.log(konyv1.szerzo);
+console.log('A könyv ennyi éve jelent meg: ' + (2013 - konyv1.kiadas));
+</code></p>
+
+<p>Egy objektum egy tulajdonságára tehát úgy lehet hivatkozni, hogy az objektum referenciát tartalmazó változó neve után pontot teszünk, és kiírjuk a tulajdonság nevét.</p>
+
+<p>Egy másik módszer, hogy az objektum változójának a neve után szögletes zárójelben megadjuk a tulajdonság nevét sztring-ként. A következő példák mindegyike működik ezzel a módszerrel is! Ez a példa ugyanazt írja ki, mint az előző:</p>
+
+<p><code>javascript
+console.log(konyv1['cim']);
+console.log(konyv1['szerzo']);
+console.log('A könyv ennyi éve jelent meg: ' + (2013 - konyv1['kiadas']));
+</code></p>
+
+<p>Egy tulajdonság értékének megváltoztatása:</p>
+
+<p><code>javascript
+konyv1.cim = "Viszlát, és kösz a halakat!";
+</code></p>
+
+<p>Egy tulajdonság törlése:</p>
+
+<p><code>javascript
+delete konyv1.szerzo;
+</code></p>
+
+<p>Az objektum referenciát át lehet adni függvényeknek argumentumként:</p>
+
+<p>```javascript
+var konyv_info = function(konyv) {
+  return konyv.szerzo + ‘ - ‘ + konyv.cim + ‘ (‘ + konyv.kiadas + ‘)’;
+};</p>
+
+<p>console.log(konyv_info(konyv1));
+// Kiírja hogy: “Douglas Adams - Galaxis útikalauz stopposoknak (1979)”
+```</p>
+
+<h2 id="konstruktorok-osztlyok">Konstruktorok, osztályok</h2>
+
+<p>Az objektumok létrehozásának egy másik módja, ha először egy objektum <strong>osztályt</strong> definiálunk, és azután azt <strong>példányosítjuk</strong>, aminek hatására létrejönnek az <strong>objektumpéldányok</strong>. Akkor érdemes osztályt létrehozni, ha sok hasonló objektummal fogunk dolgozni, amiknek van valamilyen közös jellemzője.</p>
+
+<p>JavaScript-ben egy osztályt az osztály <strong>konstruktor függvényének</strong> megadásával lehet létrehozni. Ezek a hagyományos függvényektől három szempontból térnek el:</p>
+
+<ul>
+  <li>meghívni őket a <code>new</code> kulcsszóval lehet</li>
+  <li>a konstruktor meghívásakor létrejön egy üres objektum, amire a függvényen belül a <code>this</code> kulcsszóval lehet hivatkozni</li>
+  <li>nem kell a függvény végén a <code>return</code> kulcsszóval visszatérési értéket megadni, mert a visszatérési érték automatikusan az újonnan létrejött objektumpéldány lesz</li>
+</ul>
+
+<p>A konstruktor szerepe, hogy az újonnan létrejött üres objektum tulajdonságait beállítsa. Példa:</p>
+
+<p>```javascript
+var kovetkezo_azonosito = 1;  // A legkisebb szabad (nem foglalt) könyv azonosító</p>
+
+<p>var Konyv = function(szerzo, cim, kiadas) {
+  // Az argumentumként megadott adatokhoz tartozó tulajdonságok beállítása
+  this.szerzo = szerzo;
+  this.cim = cim;
+  this.kiadas = kiadas;
+  // A könyv azonosítájának beállítjuk a legkisebb lefoglalatlan azonosítót
+  this.azonosito = kovetkezo_azonosito;
+  // Növeljük a kovetkezo_azonosito-t, hogy a következő már nagyobb sorszámot kapjon
+  kovetkezo_azonosito += 1;
+};</p>
+
+<p>// Könyv példányok:
+var konyv1 = new Konyv(“Douglas Adams”, “Galaxis útikalauz stopposoknak”, 1979);
+var konyv2 = new Konyv(“Kurt Vonnegut”, “Macskabölcső”, 1963);
+var konyv3 = new Konyv(“Déry Tibor”, “Kedves bópeer…! “, 1973);
+```</p>
+
+<p>Látható, hogy a könyv objektumok létrehozása így rövidebb kóddal elérhető (1 sor objektumonként, vesd össze a jegyzet első példájával), másrészt a konstruktor automatikusan beállítja a könyvek egyedi azonosítóját is.</p>
+
+<p>A konstruktorral létrehozott objektumok minden szempontból ugyanúgy viselkednek, mint a tulajdonságok felsorolásával létrehozott obejktumok: el lehet érni a tulajdonságaikat, át lehet őket adni függvényeknek argumentumként, stb.</p>
+
+<p>Amikor azt mondjuk, hogy egy adott osztálynak van egy <em>x</em> tulajdonsága, akkor azalatt általában azt értjük, hogy az adott osztály minden példányának van <em>x</em> tulajdonsága (mert a konstruktor beállítja).</p>
+
+<h2 id="metdusok">Metódusok</h2>
+
+<p>Az egyes tulajdonságok értéke bármi lehet, akár függvény is. Az olyan függvényeket, amik egy objektum egy tulajdonságaként érhetőek el, <strong>metódusok</strong>nak nevezzük.</p>
+
+<p>A metódusok különlegessége, hogy azt az objektumot, amihez tartoznak, a <code>this</code> kulcsszó segítségével elérhetik.</p>
+
+<p>Az előző példában megírt <code>konyv_info()</code> függvényt metódusként is lehetne definiálni. Ha csak egy könyv objektumot hozunk létre, nem pedig osztályt, akkor ezt így tehetjük meg:</p>
+
+<p>```javascript
+var konyv1 = {
+  szerzo: “Douglas Adams”,
+  cim: “Galaxis útikalauz stopposoknak”,
+  kiadas: 1979,
+  azonosito: 42,
+  info: function() {
+    return this.szerzo + ‘ - ‘ + this.cim + ‘ (‘ + this.kiadas + ‘)’;
+  }
+};</p>
+
+<p>// A metódus használata:
+var s = konyv1.info();
+console.log(s);  // A konzolba kiírja hogy “Douglas Adams - Galaxis útikalauz stopposoknak (1979)”
+```</p>
+
+<p>Ha több könyv objektumunk is lesz, akkor nem túl praktikus az összeshez leírni az <code>info()</code> metódus kódját. Ilyenkor általában osztályt hozunk létre, és az osztály minden példányának beállítjuk a metódust a konstruktorban:</p>
+
+<p>```javascript
+var Konyv = function(szerzo, cim, kiadas) {
+  // …
+  // Ide jöhet az előző konstruktoros példában megírt kód</p>
+
+<p>this.info = function() {
+    return this.szerzo + ‘ - ‘ + this.cim + ‘ (‘ + this.kiadas + ‘)’;
+  };
+};</p>
+
+<p>var konyv2 = new Konyv(“Douglas Adams”, “Galaxis útikalauz stopposoknak”, 1979);</p>
+
+<p>var s = konyv2.info();
+console.log(s);  // A konzolba kiírja hogy “Douglas Adams - Galaxis útikalauz stopposoknak (1979)”
+```</p>
+
+<p>A metódusok legnagyobb előnye, hogy az adott objektumhoz tartozó függvények az adott objektumon keresztül elérhetőek. A metódusokat és a tulajdonságokat használva az összetartozó adatok, és az adatokhoz tartozó műveletek mind egy helyen lesznek elérhetőek, ami általában logikusabb felépítésű és könnyebben olvasható kódhoz vezet.</p>
+
+<h2 id="pldk">Példák</h2>
+
+<p>Még néhány példa arra, hogy mikor szokás objektumokat használni:</p>
+
+<ul>
+  <li>egy rajzolóprogramban lehet egy <code>Circle</code> osztály a következő tulajdonságokkal:
+    <ul>
+      <li><code>x</code>: a kör középpontjának x koordinátája</li>
+      <li><code>y</code>: a kör középpontjának y koordinátája</li>
+      <li><code>r</code>: a kör sugara</li>
+      <li><code>draw()</code>: metódus, ami kirajzolja a kört a képernyőre</li>
+      <li><code>area()</code>: metódus, aminek a visszatérési értéke a kör területe</li>
+    </ul>
+  </li>
+  <li>egy zenelejátszó programban lehet egy <code>Song</code> osztály a következő tulajdonságokkal:
+    <ul>
+      <li><code>author</code>: a szám szerzője</li>
+      <li><code>title</code>: a szám címe</li>
+      <li><code>play()</code>: metódus, ami elkezdi lejátszani a zeneszámot</li>
+      <li><code>stop()</code>: metódus, ami leállítja a zeneszám lejátszását</li>
+    </ul>
+  </li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[JavaScript programozás - Canvas API]]></title>
+    <link href="http://gabor.molnar.es/blog/2013/05/05/javascript-programozas-jegyzet-canvas-api/"/>
+    <updated>2013-05-05T10:48:00+02:00</updated>
+    <id>http://gabor.molnar.es/blog/2013/05/05/javascript-programozas-jegyzet-canvas-api</id>
+    <content type="html"><![CDATA[<p>A <code>&lt;canvas&gt;</code> egy olyan HTML element, ami egy “rajzvásznat” jelenít meg, amire JavaScript segítségével lehet rajzolni. A rajzoló függvények összefoglaló neve <strong>Canvas API</strong>.</p>
+
+<!-- more -->
+
+<h2 id="inicializci">Inicializáció</h2>
+
+<p>Az inicializáció során a JavaScript kódban lekérjük a vászon referenciáját (<code>rajz</code> változó), majd kiválasztjuk annak 2 dimenziós rajzoló kontextusát (<code>context</code> változó). Ez egy objektum, aminek különböző függvényeit meghívva lehet rajzolni.</p>
+
+<p>```html
+&lt;!DOCTYPE html&gt;</p>
+<html>
+<head />
+<body>
+
+<!-- Egy 500x500 pixel méretű rajzvászon, "rajz" id-vel. -->
+<canvas width="500" height="500" id="rajz" />
+
+<script>
+  // A canvas objektumhoz az id-je alapján lehet hozzáférni:
+  var rajz = document.getElementById('rajz');
+  
+  // A rajzoló függvényeket a vászon 2 dimenziós "kontextusában" fogjuk használni
+  // (van 3 dimenziós is, de azzal most nem foglalkozunk)
+  var context = rajz.getContext('2d');
+  
+  // Ide jön a további rajzoló kód
+  // ...
+</script>
+
+<body>
+
+```
+
+A kurzor
+--------
+
+A rajzvásznon mindig van egy láthatatlan kurzor aminek van pozíciója, és iránya. A kurzor kezdő pozíciója a vászon bal felső sarka, és a bal alsó sarok felé néz. Rajzolni mindig a kurzorhoz képest lehet, például utasíthatjuk a gépet, hogy "rajzolj egy kört, aminek a középpontja a kurzor" (lásd később). A kurzor mozgatására használható függvények:
+
+```javascript
+// A kurzor elmozgatása balra x-el, és előre y-nal
+// Az x és y helyén számnak, vagy számot tartalmazó változónak kell állnia!
+// (ez a következő példáknál is érvényes)
+context.translate(x, y);
+
+// A kurzor elfordítás az óramutató járásával megegyező irányba r radiánnal
+context.rotate(r);
+```
+
+Ha fokban szeretnénk számolni radián helyett, használjuk például ezt a függvényt:
+```javascript
+// A kurzor elfordítás az óramutató járásával megegyező irányba f fokkal
+var rotateDegree = function(f) {
+  context.rotate((f / 360) * 2 * Math.PI);
+};
+```
+
+Alakzatok
+---------
+
+```javascript
+// Rajzol egy szelesseg * magassag méretű téglalap körvonalat a kurzorhoz képest eltolva.
+// Az eltolást az x és az y adja meg (értékük lehet 0 is).
+// A téglalap a kurzorhoz képest előre és balra fog elhelyezkedni (+eltolás).
+context.strokeRect(x, y, szelesseg, magassag)
+
+// Ez a függvény rajzol egy r pixel sugarú kört aminek a középpontja a kurzor
+var circle = function(r) {
+  context.beginPath();                       // elkezd egy útvonalat
+  context.arc(0, 0, r, 0, Math.PI*2, true);  // rajzol egy körívet
+  context.stroke();                          // beszínezi a körívet
+};
+```
+
+Kitöltött alakzatok létrehozásához használjuk a téglalap esetén a `context.fillRect`, a kör esetén a `context.fill` függvényeket a fenti `context.strokeRect` és `context.stroke` helyett. Ezen kívül nem kell semmit megváltoztatni a kódban.
+
+Színek
+------
+
+A kurzorhoz mindig tartozik egy kitöltési szín, és egy körvonalszín. Az alakzatok rajzolása mindig az aktuális kitöltési illetve vonalszínnel történik. Alapértelmezés szerint a vonalszín fekete, a kitöltési szín pedig átlátszó. Ezeket egyszerűen meg lehet változtatni:
+
+```javascript
+context.strokeStyle = 'green' ;  // A kitöltési szín legyen zöld
+context.fillStyle = 'blue';      // A vonalszín legyen kék
+```
+
+Az angol nevek mellett használható többféle színskála is. Ezek egyike az ún. HSL színskála (példuál: `context.strokeStyle = 'hsl(123, 50%, 50%)';`), ezzel a http://hslpicker.com/ weboldalon lehet kisérletezni.
+
+Kurzor mentés, visszatöltés
+---------------------------
+
+Szükség lehet arra, hogy a kurzor aktuális helyzetét és színét elmentsük, hogy később vissza lehessen tölteni. Például egy összetett alakzatot kirajzoló függvénynek először illik elmenteni a kurzort, és az összetett alakzat kirajzolása után visszatölteni. Erre azért van szükség, mert a hívó arra számít, hogy a függvény meghívása után is ugyanott találja a kurzort, ahol a meghívás előtt volt.
+
+```javascript
+context.save();    // A kurzor elmentése.
+// egyéb műveletek...
+context.restore(); // A kurzor visszatöltése.
+```
+
+Animáció
+--------
+
+Animációt létrehozni a Canvas API-val nem nehéz, de szükséges hozzá néhány olyan függvény, amiket nem érdemes külön-külön megismernünk, mert ritkán használatosak. Ehelyett használjuk a következő függvényt, ami minden képkocka elején letörli a vásznat, és meghívja az argumentumként megadott `draw_callback` függvényt, ami az adott képkocka kirajzolását kell hogy elvégezze.
+
+```javascript
+var animate = function(context, draw_callback) {
+  var nextFrame = window.requestAnimationFrame ||
+                  window.mozRequestAnimationFrame ||
+                  window.msRequestAnimationFrame;
+  nextFrame(function callback(timestamp) {
+    context.save();
+    context.setTransform(1, 0, 0, 1, 0, 0);
+    context.clearRect (0, 0, context.canvas.width, context.canvas.height);
+    draw_callback(timestamp);
+    context.restore();
+    nextFrame(callback);
+  });
+};
+```
+
+Példa az `animate` használatára, ami egy jobbra mozgó téglalapot rajzol ki:
+
+```javascript
+animate(context, function(t) {        // A t az animáció kezdete óta eltelt idő (ms-ben).
+  context.translate(t / 100, 0);      // A kurzort a bal felső sarokból balra mozgatjuk.
+  context.strokeRect(0, 0, 100, 100); // Rajzolunk egy 100x100 pixeles téglalapot.
+});
+```
+
+Olvass tovább
+-------------
+
+Ha mélyebben érdekel a Canvas API, [ezen az oldalon](https://developer.mozilla.org/en-US/docs/HTML/Canvas/Tutorial) sokkal részletesebb leírás található angolul.
+</body></body></html>
+]]></content>
+  </entry>
+  
+</feed>

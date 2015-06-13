@@ -1,0 +1,597 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>M.G.</title>
+  <meta name="author" content="Gábor Molnár">
+
+  
+  <meta name="description" content="This is the summary of the fifth week of my Google Summer of Code project: HTTP/2 prototype server implementation in node.js. ">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://gabor.molnar.es/blog/page/2">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="M.G." type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+<link href='//fonts.googleapis.com/css?family=Open+Sans&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+<!--<link href='//fonts.googleapis.com/css?family=Fjalla+One&subset=latin-ext,latin' rel='stylesheet' type='text/css'>-->
+<link href='//fonts.googleapis.com/css?family=Oswald:700,400&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-1277369-13']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">M.G.</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:gabor.molnar.es" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/07/19/gsoc-week-number-5/">GSoC week #5</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-19T17:47:00+02:00" pubdate data-updated="true">Jul 19<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>This is the summary of the fifth week of my Google Summer of Code project: <a href="https://google-melange.appspot.com/gsoc/project/google/gsoc2013/molnarg/5001">HTTP/2 prototype server implementation in node.js</a>.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/07/19/gsoc-week-number-5/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/07/14/gsoc-week-number-4/">GSoC week #4</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-14T20:33:00+02:00" pubdate data-updated="true">Jul 14<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>This is the summary of the fourth week of my Google Summer of Code project: <a href="https://google-melange.appspot.com/gsoc/project/google/gsoc2013/molnarg/5001">HTTP/2 prototype server implementation in node.js</a>.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/07/14/gsoc-week-number-4/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/07/08/gsoc-week-number-3/">GSoC week #3</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-08T21:36:00+02:00" pubdate data-updated="true">Jul 8<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>This is the summary of the third week of my Google Summer of Code project: <a href="https://google-melange.appspot.com/gsoc/project/google/gsoc2013/molnarg/5001">HTTP/2 prototype server implementation in node.js</a>.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/07/08/gsoc-week-number-3/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/07/03/the-http-slash-2-header-compression-implementation-of-node-http2/">The HTTP/2 Header Compression implementation of node-http2</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-03T18:21:00+02:00" pubdate data-updated="true">Jul 3<span>rd</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I’m happy to announce that node-http2 now implements the first draft of the <a href="http://tools.ietf.org/html/draft-ietf-httpbis-header-compression-00#appendix-B">HTTP/2 Header Compression</a> spec. This is the ‘-00’ version released on June 25, 2013.</p>
+
+<p>The source code and the <a href="http://jashkenas.github.io/docco/">docco</a>-generated documentation of node-http2 is available on <a href="https://github.com/molnarg/node-http2">GitHub</a> and in the <a href="https://npmjs.org/package/http2">NPM repository</a>. The documentation for the compression code is available <a href="http://molnarg.github.io/node-http2/compressor.html">here</a> as well.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/07/03/the-http-slash-2-header-compression-implementation-of-node-http2/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/07/01/gsoc-week-number-2/">GSoC week #2</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-01T19:02:00+02:00" pubdate data-updated="true">Jul 1<span>st</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>This is the summary of the second week of my Google Summer of Code project: <a href="https://google-melange.appspot.com/gsoc/project/google/gsoc2013/molnarg/5001">HTTP/2 prototype server implementation in node.js</a>.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/07/01/gsoc-week-number-2/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/06/23/gsoc-week-number-1/">GSoC week #1</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-23T13:03:00+02:00" pubdate data-updated="true">Jun 23<span>rd</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>This is the summary of the first week of my Google Summer of Code project: <a href="https://google-melange.appspot.com/gsoc/project/google/gsoc2013/molnarg/5001">HTTP/2 prototype server implementation in node.js</a>.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/06/23/gsoc-week-number-1/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/06/11/google-summer-of-code/">Google Summer of Code</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-11T10:08:00+02:00" pubdate data-updated="true">Jun 11<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>It’s just a quick post to say hello to everybody who plans to follow my Google Summer of Code project,
+which is about implementing a HTTP/2 prototype server in node.js. I will blog about it weekly to keep
+you informed.</p>
+
+<p>The information page of the project on the GSoC2013 website is <a href="https://google-melange.appspot.com/gsoc/project/google/gsoc2013/molnarg/5001">this</a>. I will be happy
+to email you the full proposal if you are interested, but I don’t want to share it publicly since
+it contains personal information.</p>
+
+<p>The project is <a href="https://github.com/molnarg/node-http2">hosted on GitHub</a>, and will be available as an <a href="https://npmjs.org/package/http2">npm module</a>.</p>
+
+<p>The Atom feed of my GSoC related blog posts is <a href="http://gabor.molnar.es/blog/categories/google-summer-of-code/atom.xml">this</a>.</p>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/06/08/biztonsagos-programozas-rust-nyelven/">Biztonságos programozás Rust nyelven</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-08T22:25:00+02:00" pubdate data-updated="true">Jun 8<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Tegnap ebben a témában adtam elő. A slide-ok <a href="/slides/rust-security/">itt elérhetőek</a>.</p>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/06/02/irssi-in-the-browser/">IRSSI in the browser</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-02T21:31:00+02:00" pubdate data-updated="true">Jun 2<span>nd</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img src="/images/irssi-in-the-browser.png" style="width: 100%;" /></p>
+
+<p>This is a quick guide to using the <a href="http://irssi.org/">IRSSI</a> IRC client in a permanent browser tab. It is made possible by <a href="https://github.com/chjj/tty.js/">tty.js</a>, a great node.js based project that makes the command line accessible in the browser (using a lightweight webserver). A basic setup with IRSSI running on the local machine is quite easy, but it gets a little tricky if you happen to run IRSSI on a server to stay connected all the time. If you run IRSSI on a remote server and want to see it in a browser tab, then this guide is for you.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/06/02/irssi-in-the-browser/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/05/12/javascript-programozas-jegyzet-a-jquery-fuggvenykonyvtar/">JavaScript programozás - A jQuery függvénykönyvtár</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-12T20:16:00+02:00" pubdate data-updated="true">May 12<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>A böngésző az oldal betöltésekor beolvassa a HTML fájlt, feldolgozza a stíluslapokat és lefuttatja a hivatkozott szkripteket. Ez azonban csak a kezdet :)</p>
+
+<p>A JavaScript segítségével könnyen interaktívvá tehető egy weboldal. Ehhez két nagyon fontos eszközünk is van:</p>
+
+<ul>
+  <li>lehetséges a felhasználó tevékenységeire reagálni (egérkattintás, szöveg beírása, stb)</li>
+  <li>meg lehet változtatni a weboldal tartalmát a betöltődés után</li>
+</ul>
+
+<p>Ez a két dolog már elég ahhoz, hogy egyszerű webalkalmazásokat készítsünk.</p>
+
+<p>A beépített függvények viszont, amikkel ezeket a funkciókal elérhetjük, nem mindig egyszerűen használhatók, és van, hogy böngészőnként eltérően működnek. Szerencsére több olyan függvénykönyvtár is van, ami leegyszerűsíti a dolgunkat. Az egyik ilyen, nagyon népszerű függvénykönyvtár a <a href="http://jquery.com/">jQuery</a>, ennek a használatát fogom röviden bemutatni.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/05/12/javascript-programozas-jegyzet-a-jquery-fuggvenykonyvtar/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/blog/page/3/">&larr; Older</a>
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/13/ucsb-ictf-2013-uranus/">UCSB iCTF 2013 - The Uranus service</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/09/25/gsoc-wrap-up/">GSoC - wrap up</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/09/15/gsoc-week-number-13/">GSoC week #13</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/09/09/gsoc-week-number-12/">GSoC week #12</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/09/03/gsoc-week-number-11/">GSoC week #11</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Gábor Molnár -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'gabor-molnar';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+</body>
+</html>

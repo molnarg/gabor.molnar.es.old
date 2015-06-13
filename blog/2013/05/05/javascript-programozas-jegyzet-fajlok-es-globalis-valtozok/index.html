@@ -1,0 +1,492 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>JavaScript programozás - Fájlok és globális változók - M.G.</title>
+  <meta name="author" content="Gábor Molnár">
+
+  
+  <meta name="description" content="A legtöbb programozási nyelvben lehetőség van arra, hogy a program egyes részeit külön fájlokban tároljuk. Egy-egy fájlban általában logikailag &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://gabor.molnar.es/blog/2013/05/05/javascript-programozas-jegyzet-fajlok-es-globalis-valtozok">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="M.G." type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+<link href='//fonts.googleapis.com/css?family=Open+Sans&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+<!--<link href='//fonts.googleapis.com/css?family=Fjalla+One&subset=latin-ext,latin' rel='stylesheet' type='text/css'>-->
+<link href='//fonts.googleapis.com/css?family=Oswald:700,400&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-1277369-13']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">M.G.</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:gabor.molnar.es" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">JavaScript programozás - Fájlok és globális változók</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-05T10:52:00+02:00" pubdate data-updated="true">May 5<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>A legtöbb programozási nyelvben lehetőség van arra, hogy <strong>a program egyes részeit külön fájlokban tároljuk</strong>. Egy-egy fájlban általában logikailag összetartozó programkódok vannak: egy webshop programban például valószínűleg nem egy fájlban található a számlakezelés és a raktárkezelés. A számlakezelés lehet hogy több fájlba van szétszedve, attól függően, hogy mekkora a kód mérete, és hogy mennyire elkülöníthetőek az egyes részek egymástól. Az, hogy mennyi, és milyen programkód kerül egy fájlba, az a programozó döntése, hasonlóan ahhoz, ahogy egy író is maga dönti el, hogy a könyvét hogyan bontja részekre, fejezetekre és bekezdésekre. A fájlokra bontással a kód átláthatóbb, könnyebben olvasható lesz (ahogy egy könyv is könnyebben olvasható, ha fejezetekre van osztva).</p>
+
+<p>Az egyes programrészeknek valamilyen módon együtt kell dolgozniuk. Ez JavaScript-ben úgy valósul meg, hogy minden  fájl elérhetővé tesz bizonyos változókat a többi programrész számára (ezeket hívjuk <strong>globális változók</strong>nak), valamint használhatja a többi programrész által elérhetővé tett globális változókat.</p>
+
+<p>Sokszor használunk olyan programrészeket, amiket mások írtak. Az olyan programrészleteket, amiket szándékosan arra terveztek, hogy mások használják őket a saját programjukban, <strong>függvénykönyvtár</strong>aknak nevezzük. Ezeket legtöbbször külön fájlként lehet letölteni, és előre meghatározott globális változókat hoznak létre. Ezek a globális változók általában függvények (innen ered az elnevezés), osztályok vagy objektumok, de természetesen tárolhatnak bármilyen más értéket is (szám, sztring, stb.). Az, hogy hogyan kell használni ezeket a globális változókat (pl. milyen argumentumokat kell átadni az adott függvényeknek) a függvénykönyvtár dokumentációja írja le. Ezt nevezzük a könyvtár <strong>API</strong>-jának (Application Programming Interface).</p>
+
+<!-- more -->
+
+<h2 id="html-s-javascript-fjlok">HTML és JavaScript fájlok</h2>
+
+<p>Amikor egy weboldalon futtatunk JavaScript kódot, akkor a kódot <code>&lt;script&gt;</code> tag-ek közé írva adjuk meg. Egy HTML oldalon akár több ilyen is lehet. Egy-egy <code>&lt;script&gt;</code> tag tartalmát <strong>külső fájlként is megadhatjuk az <code>src</code> attribútum használatával</strong>:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>index.html</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+</pre></td><td class="code"><pre><code class="html"><span class="line"><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span><span class="line"><span class="nt">&lt;html&gt;</span>
+</span><span class="line"><span class="nt">&lt;head&gt;&lt;/head&gt;</span>
+</span><span class="line"><span class="nt">&lt;body&gt;</span>
+</span><span class="line">
+</span><span class="line"><span class="c">&lt;!-- Ez egy &#39;beágyazott&#39; script tag, ami kiírja, hogy &quot;16 * 42 = 672&quot; --&gt;</span>
+</span><span class="line"><span class="nt">&lt;script&gt;</span>
+</span><span class="line"><span class="kd">var</span> <span class="nx">szorzat</span> <span class="o">=</span> <span class="mi">16</span> <span class="o">*</span> <span class="mi">42</span><span class="p">;</span>
+</span><span class="line"><span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">&#39;16 * 42 = &#39;</span> <span class="o">+</span> <span class="nx">szorzat</span><span class="p">);</span>
+</span><span class="line"><span class="nt">&lt;/script&gt;</span>
+</span><span class="line">
+</span><span class="line"><span class="c">&lt;!-- Ez egy külső fájlként hivatkozott script tag. --&gt;</span>
+</span><span class="line"><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;elso.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class="line">
+</span><span class="line"><span class="c">&lt;!-- Ez egy másik, külső fájlként hivatkozott script tag. --&gt;</span>
+</span><span class="line"><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;masodik.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class="line">
+</span><span class="line"><span class="nt">&lt;body&gt;</span>
+</span><span class="line"><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Ilyenkor a böngésző a következőképpen jár el:</p>
+
+<ol>
+  <li>lefuttatja az első, beágyazott kódrészletet (ami kiírja hogy <code>16 * 42 = 672</code>)</li>
+  <li>letölti az <code>elso.js</code> fájlt (vagy beolvassa a lemezről, ha a HTML helyi fájl)</li>
+  <li>lefuttatja a letöltött kódrészletet</li>
+  <li>letölti a <code>masodik.js</code> fájlt (vagy beolvassa a lemezről, ha a HTML helyi fájl)</li>
+  <li>lefuttatja a letöltött kódrészletet</li>
+</ol>
+
+<p>Az <code>elso.js</code> és a <code>masodik.js</code> tartalma ilyenkor mindig JavaScript kód (HTML nélkül), például:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>elso.js</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="javascript"><span class="line"><span class="c1">// Az elso.js fájl tartalma:</span>
+</span><span class="line"><span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">&#39;Ezt a szoveget az elso fajl irta ki.&#39;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>masodik.js</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="javascript"><span class="line"><span class="c1">// A masodik.js fájl tartalma:</span>
+</span><span class="line"><span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">&#39;Ezt a szoveget a masodik fajl irta ki.&#39;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Ha az <code>src</code> attribútum csak egy fájlnevet tartalmaz, akkor a böngésző a fájlt abban a mappában fogja keresni, ahol a HTML fájl van. Tartalmazhat teljes URL-t is (pl. <code>http://sajatweboldalam.hu/elso.js</code>), ilyenkor a fájl az adott helyről tölti le.</p>
+
+<h2 id="globlis-vltozk">Globális változók</h2>
+
+<p>Amikor egy függvényben a <code>var</code> kulcsszót használva létrehozunk egy változót, akkor az a változó csak a függvényen belül látszik. Az ilyen változókat <strong>lokális változók</strong>nak nevezzük. Ha nem egy függvényen belül használjuk a <code>var</code> kulcsszót változó létrehozására, akkor globális változó jön létre. Az eddigi programokban tehát legtöbbször globális változókkal dolgoztunk.</p>
+
+<p>A következő példában az <code>elso.js</code> egy globális változót hoz létre, a <code>masodik.js</code> pedig ezt a változót iratja ki:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>elso.js</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="javascript"><span class="line"><span class="c1">// Az elso.js fájl tartalma:</span>
+</span><span class="line"><span class="kd">var</span> <span class="nx">n</span> <span class="o">=</span> <span class="mi">42</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>masodik.js</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="javascript"><span class="line"><span class="c1">// A masodik.js fájl tartalma:</span>
+</span><span class="line"><span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s2">&quot;Az elso.js altal letrehozott globalis valtozo tartalma: &quot;</span> <span class="o">+</span> <span class="nx">n</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>A HTML-ben a következő szöveget fogjuk látni: <code>Az elso.js altal letrehozott globalis valtozo tartalma: 42</code>.</p>
+
+<p>Létezik másik két módszer is a globális változók létrehozására, ami akár függvényeken belül is használható:</p>
+
+<ul>
+  <li><code>window.x = 5;</code>
+    <ul>
+      <li>ha van <code>x</code> nevű globális változó: értékül adjuk neki az 5-öt</li>
+      <li>ha nincs <code>x</code> nevű globális változó: létrejön, és értékül adjuk neki az 5-öt</li>
+    </ul>
+  </li>
+  <li><code>y = 10;</code>
+    <ul>
+      <li>ha van <code>y</code> nevű lokális változó: értékül adjuk neki a 10-et</li>
+      <li>ha van <code>y</code> nevű globális változó: értékül adjuk neki a 10-et</li>
+      <li>ha nincs <code>y</code> nevű lokális vagy globális változó: létrejön az <code>y</code> <em>globális</em> változó, és értékül adjuk neki a 10-et</li>
+    </ul>
+  </li>
+</ul>
+
+<p>Látható, hogy a második módszer kísértetiesen hasonlít a lokális változó létrehozására használható <code>var y = 10;</code>-hez. Ha nem figyelünk oda, akkor könnyen létrehozhatunk globális változókat lokális változók helyett függvények kódjában is. Hogy ez miért lehet baj, azt a következő rész mutatja be.</p>
+
+<h2 id="ha-lehet-hasznljunk-loklis-vltozkat">Ha lehet, használjunk lokális változókat!</h2>
+
+<p>Függvényekben nagyon könnyen hibákhoz vezet az, ha mindenre globális változót használunk.</p>
+
+<p>Egy példa arra, hogy milyen hibákról van szó:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+</pre></td><td class="code"><pre><code class="javascript"><span class="line"><span class="c1">// Program, ami kiiírja az összes egyjegyű szám négyzetét.</span>
+</span><span class="line">
+</span><span class="line"><span class="kd">var</span> <span class="nx">negyzet_kiiras</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
+</span><span class="line">  <span class="nx">i</span> <span class="o">=</span> <span class="nx">x</span> <span class="o">*</span> <span class="nx">x</span><span class="p">;</span>  <span class="c1">// Lemaradt a var kulcsszó, ezért itt a globális i változónak adunk értéket</span>
+</span><span class="line">  <span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="nx">x</span> <span class="o">+</span> <span class="s2">&quot; négyzete: &quot;</span> <span class="o">+</span> <span class="nx">i</span> <span class="o">+</span> <span class="s1">&#39;&lt;br&gt;&#39;</span><span class="p">);</span>
+</span><span class="line"><span class="p">};</span>
+</span><span class="line">
+</span><span class="line"><span class="c1">// Az &#39;i&#39; ciklusváltozó globális, mert nem függvényben hoztuk létre</span>
+</span><span class="line"><span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class="line">  <span class="nx">negyzet_kiiras</span><span class="p">(</span><span class="nx">i</span><span class="p">);</span>
+</span><span class="line"><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Ez a program a következőket írja ki:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="javascript"><span class="line"><span class="mi">0</span> <span class="nx">n</span><span class="err">é</span><span class="nx">gyzete</span><span class="o">:</span> <span class="mi">0</span>
+</span><span class="line"><span class="mi">1</span> <span class="nx">n</span><span class="err">é</span><span class="nx">gyzete</span><span class="o">:</span> <span class="mi">1</span>
+</span><span class="line"><span class="mi">2</span> <span class="nx">n</span><span class="err">é</span><span class="nx">gyzete</span><span class="o">:</span> <span class="mi">4</span>
+</span><span class="line"><span class="mi">5</span> <span class="nx">n</span><span class="err">é</span><span class="nx">gyzete</span><span class="o">:</span> <span class="mi">25</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>A függvényben egy elírás miatt lemaradt a <code>var</code>, ezért a globális <code>i</code> változót használta egy ideiglenes érték eltárolására. Ezt a változót használtuk a for ciklusban is, ez okozta a problémát. Az ilyen hibák nehezen felderíthetők, mert csak ritkán jönnek elő (pl. csak akkor, ha a ciklusváltozó neve éppen <code>i</code>), és nagyon furcsa hatásokat tudnak produkálni. A javított <code>negyzet_kiiras</code> függvény, és a program helyes kimenete:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="javascript"><span class="line"><span class="kd">var</span> <span class="nx">negyzet_kiiras</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
+</span><span class="line">  <span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="nx">x</span> <span class="o">*</span> <span class="nx">x</span><span class="p">;</span>
+</span><span class="line">  <span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="nx">x</span> <span class="o">+</span> <span class="s2">&quot; négyzete: &quot;</span> <span class="o">+</span> <span class="nx">i</span> <span class="o">+</span> <span class="s1">&#39;&lt;br&gt;&#39;</span><span class="p">);</span>
+</span><span class="line"><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+</pre></td><td class="code"><pre><code class="javascript"><span class="line"><span class="mi">0</span> <span class="nx">n</span><span class="err">é</span><span class="nx">gyzete</span><span class="o">:</span> <span class="mi">0</span>
+</span><span class="line"><span class="mi">1</span> <span class="nx">n</span><span class="err">é</span><span class="nx">gyzete</span><span class="o">:</span> <span class="mi">1</span>
+</span><span class="line"><span class="mi">2</span> <span class="nx">n</span><span class="err">é</span><span class="nx">gyzete</span><span class="o">:</span> <span class="mi">4</span>
+</span><span class="line"><span class="mi">3</span> <span class="nx">n</span><span class="err">é</span><span class="nx">gyzete</span><span class="o">:</span> <span class="mi">9</span>
+</span><span class="line"><span class="mi">4</span> <span class="nx">n</span><span class="err">é</span><span class="nx">gyzete</span><span class="o">:</span> <span class="mi">16</span>
+</span><span class="line"><span class="mi">5</span> <span class="nx">n</span><span class="err">é</span><span class="nx">gyzete</span><span class="o">:</span> <span class="mi">25</span>
+</span><span class="line"><span class="mi">6</span> <span class="nx">n</span><span class="err">é</span><span class="nx">gyzete</span><span class="o">:</span> <span class="mi">36</span>
+</span><span class="line"><span class="mi">7</span> <span class="nx">n</span><span class="err">é</span><span class="nx">gyzete</span><span class="o">:</span> <span class="mi">49</span>
+</span><span class="line"><span class="mi">8</span> <span class="nx">n</span><span class="err">é</span><span class="nx">gyzete</span><span class="o">:</span> <span class="mi">64</span>
+</span><span class="line"><span class="mi">9</span> <span class="nx">n</span><span class="err">é</span><span class="nx">gyzete</span><span class="o">:</span> <span class="mi">81</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Egy egyszerű szabály betartásával megelőzhetőek a hasonló problémák: <strong>a függvények ideiglenes változói mindig legyenek lokálisak!</strong> A lokális változók a függvényen belül mindig “eltakarják” az ugyanolyan nevű globális változókat, tehát nem kell körültekintőnek lenni a lokális változók elnevezésénél, lehet akár azonos neve is egy globális változóval.</p>
+
+<h2 id="fggvnyknyvtr-plda">Függvénykönyvtár példa</h2>
+
+<p>Rengeteg letölthető JavaScript függvénykönyvtár létezik, amik a legkülönfélébb dolgokat tesznek lehetővé. Egy népszerű függvénykönyvtár pl. az underscore. Ez egyetlen globális változót hoz létre, aminek a neve <code>_</code> (alulvonás) és objektum típusú. Ennek az objektumnak sok metódusa van, mindegyik más feladatot képes elvégezni. Az API dokumentáció a függvénykönyvtár weboldalán megtalálható: <a href="http://underscorejs.org">http://underscorejs.org</a>. Az <code>_.random</code> metódus véletlen számok generálására használható (<a href="http://underscorejs.org/#random">dokumentáció</a>), például így:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>otoslotto.html</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+</pre></td><td class="code"><pre><code class="html"><span class="line"><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span><span class="line"><span class="nt">&lt;html&gt;</span>
+</span><span class="line"><span class="nt">&lt;head&gt;&lt;/head&gt;</span>
+</span><span class="line"><span class="nt">&lt;body&gt;</span>
+</span><span class="line">
+</span><span class="line"><span class="c">&lt;!-- Az underscore betöltése. Léterjön a _ globális változó. --&gt;</span>
+</span><span class="line"><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore.js&quot;</span><span class="nt">&gt;</span>
+</span><span class="line"><span class="nt">&lt;/script&gt;</span>
+</span><span class="line">
+</span><span class="line"><span class="nt">&lt;script&gt;</span>
+</span><span class="line"><span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">&#39;Az otos lotto mai nyeroszamai:&lt;br&gt;&#39;</span><span class="p">);</span>
+</span><span class="line"><span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class="line">  <span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">random</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">90</span><span class="p">))</span>
+</span><span class="line">  <span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+</span><span class="line"><span class="p">}</span>
+</span><span class="line"><span class="nt">&lt;/script&gt;</span>
+</span><span class="line">
+</span><span class="line"><span class="nt">&lt;body&gt;</span>
+</span><span class="line"><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Gábor Molnár</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-05T10:52:00+02:00" pubdate data-updated="true">May 5<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/javascript-programozas-jegyzet/'>JavaScript programozás jegyzet</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/05/05/javascript-programozas-jegyzet-objektumok/" title="Previous Post: JavaScript programozás - Objektumok">&laquo; JavaScript programozás - Objektumok</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/05/05/javascript-programozas-jegyzet-tombok/" title="Next Post: JavaScript programozás - Tömbök">JavaScript programozás - Tömbök &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <!--<h1>Comments</h1>-->
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/13/ucsb-ictf-2013-uranus/">UCSB iCTF 2013 - The Uranus service</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/09/25/gsoc-wrap-up/">GSoC - wrap up</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/09/15/gsoc-week-number-13/">GSoC week #13</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/09/09/gsoc-week-number-12/">GSoC week #12</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/09/03/gsoc-week-number-11/">GSoC week #11</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Gábor Molnár -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'gabor-molnar';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://gabor.molnar.es/blog/2013/05/05/javascript-programozas-jegyzet-fajlok-es-globalis-valtozok/';
+        var disqus_url = 'http://gabor.molnar.es/blog/2013/05/05/javascript-programozas-jegyzet-fajlok-es-globalis-valtozok/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,436 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>JavaScript programozás - Canvas API - M.G.</title>
+  <meta name="author" content="Gábor Molnár">
+
+  
+  <meta name="description" content="A &lt;canvas&gt; egy olyan HTML element, ami egy “rajzvásznat” jelenít meg, amire JavaScript segítségével lehet rajzolni. A rajzoló függvények &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://gabor.molnar.es/blog/2013/05/05/javascript-programozas-jegyzet-canvas-api">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="M.G." type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+<link href='//fonts.googleapis.com/css?family=Open+Sans&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+<!--<link href='//fonts.googleapis.com/css?family=Fjalla+One&subset=latin-ext,latin' rel='stylesheet' type='text/css'>-->
+<link href='//fonts.googleapis.com/css?family=Oswald:700,400&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-1277369-13']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">M.G.</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:gabor.molnar.es" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">JavaScript programozás - Canvas API</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-05T10:48:00+02:00" pubdate data-updated="true">May 5<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>A <code>&lt;canvas&gt;</code> egy olyan HTML element, ami egy “rajzvásznat” jelenít meg, amire JavaScript segítségével lehet rajzolni. A rajzoló függvények összefoglaló neve <strong>Canvas API</strong>.</p>
+
+<!-- more -->
+
+<h2 id="inicializci">Inicializáció</h2>
+
+<p>Az inicializáció során a JavaScript kódban lekérjük a vászon referenciáját (<code>rajz</code> változó), majd kiválasztjuk annak 2 dimenziós rajzoló kontextusát (<code>context</code> változó). Ez egy objektum, aminek különböző függvényeit meghívva lehet rajzolni.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+</pre></td><td class="code"><pre><code class="html"><span class="line"><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span><span class="line"><span class="nt">&lt;html&gt;</span>
+</span><span class="line"><span class="nt">&lt;head&gt;&lt;/head&gt;</span>
+</span><span class="line"><span class="nt">&lt;body&gt;</span>
+</span><span class="line">
+</span><span class="line"><span class="c">&lt;!-- Egy 500x500 pixel méretű rajzvászon, &quot;rajz&quot; id-vel. --&gt;</span>
+</span><span class="line"><span class="nt">&lt;canvas</span> <span class="na">width=</span><span class="s">&quot;500&quot;</span> <span class="na">height=</span><span class="s">&quot;500&quot;</span> <span class="na">id=</span><span class="s">&quot;rajz&quot;</span><span class="nt">&gt;&lt;/canvas&gt;</span>
+</span><span class="line">
+</span><span class="line"><span class="nt">&lt;script&gt;</span>
+</span><span class="line">  <span class="c1">// A canvas objektumhoz az id-je alapján lehet hozzáférni:</span>
+</span><span class="line">  <span class="kd">var</span> <span class="nx">rajz</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;rajz&#39;</span><span class="p">);</span>
+</span><span class="line">
+</span><span class="line">  <span class="c1">// A rajzoló függvényeket a vászon 2 dimenziós &quot;kontextusában&quot; fogjuk használni</span>
+</span><span class="line">  <span class="c1">// (van 3 dimenziós is, de azzal most nem foglalkozunk)</span>
+</span><span class="line">  <span class="kd">var</span> <span class="nx">context</span> <span class="o">=</span> <span class="nx">rajz</span><span class="p">.</span><span class="nx">getContext</span><span class="p">(</span><span class="s1">&#39;2d&#39;</span><span class="p">);</span>
+</span><span class="line">
+</span><span class="line">  <span class="c1">// Ide jön a további rajzoló kód</span>
+</span><span class="line">  <span class="c1">// ...</span>
+</span><span class="line"><span class="nt">&lt;/script&gt;</span>
+</span><span class="line">
+</span><span class="line"><span class="nt">&lt;body&gt;</span>
+</span><span class="line"><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="a-kurzor">A kurzor</h2>
+
+<p>A rajzvásznon mindig van egy láthatatlan kurzor aminek van pozíciója, és iránya. A kurzor kezdő pozíciója a vászon bal felső sarka, és a bal alsó sarok felé néz. Rajzolni mindig a kurzorhoz képest lehet, például utasíthatjuk a gépet, hogy “rajzolj egy kört, aminek a középpontja a kurzor” (lásd később). A kurzor mozgatására használható függvények:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+</pre></td><td class="code"><pre><code class="javascript"><span class="line"><span class="c1">// A kurzor elmozgatása balra x-el, és előre y-nal</span>
+</span><span class="line"><span class="c1">// Az x és y helyén számnak, vagy számot tartalmazó változónak kell állnia!</span>
+</span><span class="line"><span class="c1">// (ez a következő példáknál is érvényes)</span>
+</span><span class="line"><span class="nx">context</span><span class="p">.</span><span class="nx">translate</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">);</span>
+</span><span class="line">
+</span><span class="line"><span class="c1">// A kurzor elfordítás az óramutató járásával megegyező irányba r radiánnal</span>
+</span><span class="line"><span class="nx">context</span><span class="p">.</span><span class="nx">rotate</span><span class="p">(</span><span class="nx">r</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Ha fokban szeretnénk számolni radián helyett, használjuk például ezt a függvényt:
+&lt;div class=&#8217;bogus-wrapper&#8217;&gt;<notextile><figure class="code">&lt;figcaption&gt;<span></span>&lt;/figcaption&gt;&lt;div class=&#8221;highlight&#8221;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#8221;gutter&#8221;&gt;&lt;pre class=&#8221;line-numbers&#8221;&gt;<span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;<code class="javascript"><span class="line"><span class="c1">// A kurzor elfordítás az óramutató járásával megegyező irányba f fokkal</span>
+</span><span class="line"><span class="kd">var</span> <span class="nx">rotateDegree</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">f</span><span class="p">)</span> <span class="p">{</span>
+</span><span class="line">  <span class="nx">context</span><span class="p">.</span><span class="nx">rotate</span><span class="p">((</span><span class="nx">f</span> <span class="o">/</span> <span class="mi">360</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">PI</span><span class="p">);</span>
+</span><span class="line"><span class="p">};</span>
+</span></code>&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</figure></notextile>&lt;/div&gt;</p>
+
+<h2 id="alakzatok">Alakzatok</h2>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+</pre></td><td class="code"><pre><code class="javascript"><span class="line"><span class="c1">// Rajzol egy szelesseg * magassag méretű téglalap körvonalat a kurzorhoz képest eltolva.</span>
+</span><span class="line"><span class="c1">// Az eltolást az x és az y adja meg (értékük lehet 0 is).</span>
+</span><span class="line"><span class="c1">// A téglalap a kurzorhoz képest előre és balra fog elhelyezkedni (+eltolás).</span>
+</span><span class="line"><span class="nx">context</span><span class="p">.</span><span class="nx">strokeRect</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">,</span> <span class="nx">szelesseg</span><span class="p">,</span> <span class="nx">magassag</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="c1">// Ez a függvény rajzol egy r pixel sugarú kört aminek a középpontja a kurzor</span>
+</span><span class="line"><span class="kd">var</span> <span class="nx">circle</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">r</span><span class="p">)</span> <span class="p">{</span>
+</span><span class="line">  <span class="nx">context</span><span class="p">.</span><span class="nx">beginPath</span><span class="p">();</span>                       <span class="c1">// elkezd egy útvonalat</span>
+</span><span class="line">  <span class="nx">context</span><span class="p">.</span><span class="nx">arc</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">r</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">PI</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>  <span class="c1">// rajzol egy körívet</span>
+</span><span class="line">  <span class="nx">context</span><span class="p">.</span><span class="nx">stroke</span><span class="p">();</span>                          <span class="c1">// beszínezi a körívet</span>
+</span><span class="line"><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Kitöltött alakzatok létrehozásához használjuk a téglalap esetén a <code>context.fillRect</code>, a kör esetén a <code>context.fill</code> függvényeket a fenti <code>context.strokeRect</code> és <code>context.stroke</code> helyett. Ezen kívül nem kell semmit megváltoztatni a kódban.</p>
+
+<h2 id="sznek">Színek</h2>
+
+<p>A kurzorhoz mindig tartozik egy kitöltési szín, és egy körvonalszín. Az alakzatok rajzolása mindig az aktuális kitöltési illetve vonalszínnel történik. Alapértelmezés szerint a vonalszín fekete, a kitöltési szín pedig átlátszó. Ezeket egyszerűen meg lehet változtatni:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="javascript"><span class="line"><span class="nx">context</span><span class="p">.</span><span class="nx">strokeStyle</span> <span class="o">=</span> <span class="s1">&#39;green&#39;</span> <span class="p">;</span>  <span class="c1">// A kitöltési szín legyen zöld</span>
+</span><span class="line"><span class="nx">context</span><span class="p">.</span><span class="nx">fillStyle</span> <span class="o">=</span> <span class="s1">&#39;blue&#39;</span><span class="p">;</span>      <span class="c1">// A vonalszín legyen kék</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Az angol nevek mellett használható többféle színskála is. Ezek egyike az ún. HSL színskála (példuál: <code>context.strokeStyle = 'hsl(123, 50%, 50%)';</code>), ezzel a http://hslpicker.com/ weboldalon lehet kisérletezni.</p>
+
+<h2 id="kurzor-ments-visszatlts">Kurzor mentés, visszatöltés</h2>
+
+<p>Szükség lehet arra, hogy a kurzor aktuális helyzetét és színét elmentsük, hogy később vissza lehessen tölteni. Például egy összetett alakzatot kirajzoló függvénynek először illik elmenteni a kurzort, és az összetett alakzat kirajzolása után visszatölteni. Erre azért van szükség, mert a hívó arra számít, hogy a függvény meghívása után is ugyanott találja a kurzort, ahol a meghívás előtt volt.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="javascript"><span class="line"><span class="nx">context</span><span class="p">.</span><span class="nx">save</span><span class="p">();</span>    <span class="c1">// A kurzor elmentése.</span>
+</span><span class="line"><span class="c1">// egyéb műveletek...</span>
+</span><span class="line"><span class="nx">context</span><span class="p">.</span><span class="nx">restore</span><span class="p">();</span> <span class="c1">// A kurzor visszatöltése.</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="animci">Animáció</h2>
+
+<p>Animációt létrehozni a Canvas API-val nem nehéz, de szükséges hozzá néhány olyan függvény, amiket nem érdemes külön-külön megismernünk, mert ritkán használatosak. Ehelyett használjuk a következő függvényt, ami minden képkocka elején letörli a vásznat, és meghívja az argumentumként megadott <code>draw_callback</code> függvényt, ami az adott képkocka kirajzolását kell hogy elvégezze.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+</pre></td><td class="code"><pre><code class="javascript"><span class="line"><span class="kd">var</span> <span class="nx">animate</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">context</span><span class="p">,</span> <span class="nx">draw_callback</span><span class="p">)</span> <span class="p">{</span>
+</span><span class="line">  <span class="kd">var</span> <span class="nx">nextFrame</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">requestAnimationFrame</span> <span class="o">||</span>
+</span><span class="line">                  <span class="nb">window</span><span class="p">.</span><span class="nx">mozRequestAnimationFrame</span> <span class="o">||</span>
+</span><span class="line">                  <span class="nb">window</span><span class="p">.</span><span class="nx">msRequestAnimationFrame</span><span class="p">;</span>
+</span><span class="line">  <span class="nx">nextFrame</span><span class="p">(</span><span class="kd">function</span> <span class="nx">callback</span><span class="p">(</span><span class="nx">timestamp</span><span class="p">)</span> <span class="p">{</span>
+</span><span class="line">    <span class="nx">context</span><span class="p">.</span><span class="nx">save</span><span class="p">();</span>
+</span><span class="line">    <span class="nx">context</span><span class="p">.</span><span class="nx">setTransform</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class="line">    <span class="nx">context</span><span class="p">.</span><span class="nx">clearRect</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">context</span><span class="p">.</span><span class="nx">canvas</span><span class="p">.</span><span class="nx">width</span><span class="p">,</span> <span class="nx">context</span><span class="p">.</span><span class="nx">canvas</span><span class="p">.</span><span class="nx">height</span><span class="p">);</span>
+</span><span class="line">    <span class="nx">draw_callback</span><span class="p">(</span><span class="nx">timestamp</span><span class="p">);</span>
+</span><span class="line">    <span class="nx">context</span><span class="p">.</span><span class="nx">restore</span><span class="p">();</span>
+</span><span class="line">    <span class="nx">nextFrame</span><span class="p">(</span><span class="nx">callback</span><span class="p">);</span>
+</span><span class="line">  <span class="p">});</span>
+</span><span class="line"><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Példa az <code>animate</code> használatára, ami egy jobbra mozgó téglalapot rajzol ki:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="javascript"><span class="line"><span class="nx">animate</span><span class="p">(</span><span class="nx">context</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">t</span><span class="p">)</span> <span class="p">{</span>        <span class="c1">// A t az animáció kezdete óta eltelt idő (ms-ben).</span>
+</span><span class="line">  <span class="nx">context</span><span class="p">.</span><span class="nx">translate</span><span class="p">(</span><span class="nx">t</span> <span class="o">/</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>      <span class="c1">// A kurzort a bal felső sarokból balra mozgatjuk.</span>
+</span><span class="line">  <span class="nx">context</span><span class="p">.</span><span class="nx">strokeRect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">);</span> <span class="c1">// Rajzolunk egy 100x100 pixeles téglalapot.</span>
+</span><span class="line"><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="olvass-tovbb">Olvass tovább</h2>
+
+<p>Ha mélyebben érdekel a Canvas API, <a href="https://developer.mozilla.org/en-US/docs/HTML/Canvas/Tutorial">ezen az oldalon</a> sokkal részletesebb leírás található angolul.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Gábor Molnár</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-05T10:48:00+02:00" pubdate data-updated="true">May 5<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/javascript-programozas-jegyzet/'>JavaScript programozás jegyzet</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/05/05/javascript-programozas-jegyzet-fuggvenyek/" title="Previous Post: JavaScript programozás - Függvények">&laquo; JavaScript programozás - Függvények</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/05/05/javascript-programozas-jegyzet-objektumok/" title="Next Post: JavaScript programozás - Objektumok">JavaScript programozás - Objektumok &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <!--<h1>Comments</h1>-->
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/13/ucsb-ictf-2013-uranus/">UCSB iCTF 2013 - The Uranus service</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/09/25/gsoc-wrap-up/">GSoC - wrap up</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/09/15/gsoc-week-number-13/">GSoC week #13</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/09/09/gsoc-week-number-12/">GSoC week #12</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/09/03/gsoc-week-number-11/">GSoC week #11</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Gábor Molnár -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'gabor-molnar';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://gabor.molnar.es/blog/2013/05/05/javascript-programozas-jegyzet-canvas-api/';
+        var disqus_url = 'http://gabor.molnar.es/blog/2013/05/05/javascript-programozas-jegyzet-canvas-api/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+</body>
+</html>
